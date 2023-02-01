@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <!-- Bootstrap CSS -->
+        <!-- https://cdnjs.com/libraries/twitter-bootstrap/5.0.0-beta1 -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.0-beta1/css/bootstrap.min.css"/>
+
+        <!-- Icons: https://getbootstrap.com/docs/5.0/extend/icons/ -->
+        <!-- https://cdnjs.com/libraries/font-awesome -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.3/font/bootstrap-icons.min.css"/>
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="assets/css/main.css"/>
+
+        <!-- Animation AOS CSS -->
+        <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+        <title>CHAPTER 02</title>
+    </head>
+
+    <body>
+        <!-- NavBar -->
+        <header>
+            <nav class="navbar fixed-top navbar-expand-md bg-body-tertiary bg-dark shadow" data-aos="fade-down" data-aos-duration="500">
+                <div class="container px-3">
+                    <!-- NavBar Logo -->
+                    <a class="navbar-brand me-5" href="index.html">
+                        <img src="assets/img/navbar.png" alt="Logo" class="" id="nav-logo">
+                    </a>
+                    <!-- End NavBar Logo -->
+
+                    <!-- NavBar Toggle -->
+                    <button class="navbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#navbarSupportedContent"
+                        aria-controls="navbarSupportedContent"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation">
+                        <span><i class="fas fa-bars"></i></span>
+                    </button>
+                    <!-- End NavBar Toggle -->
+
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <!-- Left Side -->
+                        <ul class="navbar-nav me-auto mt-2 mt-lg-0 mb-2 mb-lg-0">
+                            <li class="nav-item me-5">
+                                <a class="nav-link" aria-current="page" href="index.html">Home</a>
+                            </li>
+                            <li class="nav-item me-5">
+                                <a class="nav-link" href="project.html">Add Project</a>
+                            </li>
+                        </ul>
+                        <!-- End Left Side -->
+
+                        <!-- Right Side -->
+                        <a class="btn btn-outline-light btn-sm px-3 py-1" href="contact-me.html" role="button">Contact Me</a>
+                        <!-- End Right Side -->
+
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <!-- End NavBar -->
+
+        <!-- Content -->
+        <section class="home d-flex justify-content-center align-items-center" data-aos="fade-down" data-aos-duration="500">
+            <div class="container-fluid home-upper">
+              <div class="d-flex flex-column justify-content-center align-items-center">
+                  <!-- Title -->
+                  <div class="text-center">
+                      <h1>GET IN TOUCH</h1>
+                  </div>                
+                  <!-- End Title -->
+
+                  <!-- Form -->
+                  <div class="col-12 col-md-8 col-lg-5 mt-4">
+                      <form>
+                        <!-- Name -->
+                        <div class="form-group mb-4">
+                            <label for="name">Name</label>
+                            <input type="text" class="form-control shadow" name="name" id="name">
+                        </div>
+
+                        <!-- Email -->
+                        <div class="form-group mb-4">
+                          <label for="email">Email</label>
+                          <input type="email" name="email" id="email" class="form-control shadow">
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="form-group mb-4">
+                          <label for="phone">Phone Number</label>
+                          <input type="tel" name="phone" id="phone" class="form-control shadow">
+                        </div>
+
+                        <!-- Subject -->
+                        <div class="form-group mb-4">
+                          <label>Subject</label>
+                          <div class="input-group shadow">                       
+                            <select class="form-select" name="subject" id="subject">
+                                <option selected></option>
+                                <option value="Hiring Matters">I want to hire you</option>
+                                <option value="Discussion">I want to discuss something</option>
+                                <option value="Collaboration">Let's do a collaboration</option>
+                                <option value="Let's Talk">Let's be friends</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <!-- Comments -->
+                        <div class="form-group mb-4">
+                            <label for="description">Your Message</label>
+                            <textarea id="comments" name="comments" class="form-control shadow"></textarea>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="form-group mt-5 d-flex justify-content-end align-items-center">
+                            <div class="button-group col-3 text-center">
+                                <button type="button" name="add" id="add" class="btn btn-outline-light btn-sm contact w-100">Submit</button>
+                            </div>
+                        </div>
+                        <!-- End Submiy Button -->
+                      </form>
+                  </div>
+                  <!-- End Form -->
+              </div>
+            </div>
+        </section>
+        <!-- End Content -->
+
+        
+
+        <!-- Bootstrap JS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.5.4/umd/popper.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.0-beta1/js/bootstrap.min.js"></script>
+
+        <!-- Animation AOS JS -->
+        <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+        <!-- Main JS -->
+        <script src="assets/js/main.js"></script>
+        
+    </body>
+</html>
