@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <!-- Bootstrap CSS -->
+        <!-- https://cdnjs.com/libraries/twitter-bootstrap/5.0.0-beta1 -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.0-beta1/css/bootstrap.min.css"/>
+
+        <!-- Icons: https://getbootstrap.com/docs/5.0/extend/icons/ -->
+        <!-- https://cdnjs.com/libraries/font-awesome -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.3/font/bootstrap-icons.min.css"/>
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="/public/css/main.css"/>
+
+        <!-- Animation AOS CSS -->
+        <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+        <title>CHAPTER 02</title>
+    </head>
+
+    <body>
+         <!-- NavBar -->
+         <header>
+            <nav class="navbar fixed-top navbar-expand-md bg-body-tertiary bg-dark shadow" data-aos="fade-down" data-aos-duration="500">
+                <div class="container px-3">
+                    <!-- NavBar Logo -->
+                    <a class="navbar-brand me-5" href="/">
+                        <img src="/public/img/navbar.png" alt="Logo" class="" id="nav-logo">
+                    </a>
+                    <!-- End NavBar Logo -->
+
+                    <!-- NavBar Toggle -->
+                    <button class="navbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#navbarSupportedContent"
+                        aria-controls="navbarSupportedContent"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation">
+                        <span><i class="fas fa-bars"></i></span>
+                    </button>
+                    <!-- End NavBar Toggle -->
+
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <!-- Left Side -->
+                        <ul class="navbar-nav me-auto mt-2 mt-lg-0 mb-2 mb-lg-0">
+                            <li class="nav-item me-5">
+                                <a class="nav-link" aria-current="page" href="/">Home</a>
+                            </li>
+                            <li class="nav-item me-5">
+                                <a class="nav-link" href="/add-project">Add Project</a>
+                            </li>
+                        </ul>
+                        <!-- End Left Side -->
+
+                        <!-- Right Side -->
+                        <a class="btn btn-outline-light btn-sm px-3 py-1" href="/contact-me" role="button">Contact Me</a>
+                        <!-- End Right Side -->
+
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <!-- End NavBar -->
+
+        <!-- Content -->
+        <section class="home d-flex justify-content-center align-items-center" data-aos="fade-down" data-aos-duration="500">
+            <div class="container-fluid home-upper">
+                <div class="d-flex flex-column justify-content-center align-items-center">
+                    <!-- Title -->
+                    <div class="text-center">
+                        <h1>CRUD WEB APP</h1>
+                    </div>                
+                    <!-- End Title -->
+
+                    <!-- Upper Content -->
+                    <div class="container mt-4">
+                        <div class="row">
+                            <!-- Left Side -->
+                            <div class="py-4 col-12 col-lg-8 order-1 d-flex flex-column justify-content-center ">
+                                <!-- Project Image -->
+                                <div class="project-blog-image">
+                                    <img class="pb-image" src="/public/img/blog-image.jpg" alt="Blog Image" style="width:100%;">
+                                </div>
+                                <!-- End Project Image -->
+                            </div>
+                            <!-- End Left Side -->
+    
+                            <!-- Right Side -->
+                            <div class="ps-lg-5 col-12 col-lg-4 order-2 d-flex flex-column">
+                                <div class="blog-right-side mt-4">
+                                    <div class="d-flex flex-column">
+                                        <div class="duration mb-3">
+                                            <h4>Duration</h4>
+                                            <p><i class="fas fa-calendar-alt me-3"></i>12 Jan 2021 - 12 Feb 2021</p>
+                                            <p><i class="fas fa-clock me-3"></i>1 Month</p>
+                                        </div>
+
+                                        <div class="technology">
+                                            <h4>Technology</h4>
+                                            <div class="d-flex flex-row" style="column-gap: 50px;">
+                                                <p><i class="fab fa-react me-3"></i>React Js</p>
+                                                <p><i class="fab fa-node-js me-3"></i>Node Js</p>
+                                            </div>
+                                            <div class="d-flex flex-row" style="column-gap: 50px;">
+                                                <p><i class="fab fa-react me-3"></i>React Js</p>
+                                                <p><i class="fab fa-node-js me-3"></i>Node Js</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End Right Side -->
+                        </div>
+                    </div>
+                    <!-- End Upper Content -->
+
+                    <!-- Lower Content -->
+                    <div class="container mt-4">
+                        <p style="text-align: justify">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla vitae urna cursus, commodo ex quis, finibus velit. Suspendisse et purus consequat, venenatis mi sit amet, pulvinar ante. Aliquam egestas nulla sed rutrum dictum. Sed pulvinar nulla orci, sit amet aliquet nulla bibendum id. Sed elementum justo tristique arcu finibus, placerat lacinia dolor pulvinar. Aliquam erat volutpat. Donec tristique gravida ipsum a ultrices. Nulla laoreet dapibus sem, et interdum nisi euismod ut. Quisque fringilla nibh in velit suscipit rhoncus. Praesent ac aliquet neque, vel molestie arcu. Integer nec turpis ac nisl convallis varius.
+                            <br>
+                            <br>
+                            Suspendisse potenti. Mauris nec eros eu lorem dapibus venenatis. Etiam nec dignissim ante. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nunc et magna id eros pharetra elementum. Sed eget magna augue. In quis elit at neque gravida tempus. Quisque id finibus lectus. Sed ac ipsum tristique, rutrum augue a, blandit felis. Mauris nunc nisi, ornare vitae erat nec, tristique venenatis risus.
+                            <br>
+                            <br>
+                            Sed condimentum, purus eu vulputate facilisis, sapien est tincidunt libero, eu venenatis turpis enim ac enim. Sed vestibulum leo odio, ac pharetra dolor tincidunt vitae. Curabitur sit amet malesuada urna, ac venenatis lacus. Cras lacus purus, consequat sed mollis sit amet, pulvinar ac augue. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Morbi nec augue neque. Duis commodo orci sodales lectus commodo ultrices. Cras ullamcorper tincidunt lacus vitae molestie. Praesent elementum, dolor ut feugiat rhoncus, nisi tellus vestibulum ante, sit amet laoreet purus nisl vitae diam. Nam mi felis, interdum nec tellus at, dignissim convallis elit. Nullam ut sapien pharetra, fermentum lacus sed, commodo sapien.
+                            <br>
+                            <br>
+                        </p>
+                    </div>
+                    <!-- End Lower Content -->
+                </div>
+                
+            </div>
+        </section>
+        <!-- End Content -->
+
+        
+
+        <!-- Bootstrap JS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.5.4/umd/popper.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.0-beta1/js/bootstrap.min.js"></script>
+
+        <!-- Animation AOS JS -->
+        <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+        <!-- Main JS -->
+        <script src="/public/js/main.js"></script>
+        
+    </body>
+</html>
