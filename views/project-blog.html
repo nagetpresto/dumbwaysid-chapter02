@@ -74,42 +74,48 @@
                 <div class="d-flex flex-column justify-content-center align-items-center">
                     <!-- Title -->
                     <div class="text-center">
-                        <h1>CRUD WEB APP</h1>
+                        <h1>{{.Project.Pname}}</h1>
                     </div>                
                     <!-- End Title -->
 
                     <!-- Upper Content -->
-                    <div class="container mt-4">
-                        <div class="row">
+                    <div class="project-blog-upper container mt-4">
+                        <div class="row h-100">
                             <!-- Left Side -->
-                            <div class="py-4 col-12 col-lg-8 order-1 d-flex flex-column justify-content-center ">
+                            <div class="h-100 py-4 col-12 col-lg-8 order-1 d-flex flex-column justify-content-center">
                                 <!-- Project Image -->
-                                <div class="project-blog-image">
-                                    <img class="pb-image" src="/public/img/blog-image.jpg" alt="Blog Image" style="width:100%;">
+                                <div class="project-blog-image bg-dark px-0 py-0 mx-0 mt-0 d-flex flex-column justify-content-center">
+                                    <img class="pb-image" src="/public/img/card01.jpg" alt="Blog Image" style="width:100%;">
                                 </div>
                                 <!-- End Project Image -->
                             </div>
                             <!-- End Left Side -->
     
                             <!-- Right Side -->
-                            <div class="ps-lg-5 col-12 col-lg-4 order-2 d-flex flex-column">
+                            <div class="h-100 ps-lg-5 col-12 col-lg-4 order-2 d-flex flex-column">
                                 <div class="blog-right-side mt-4">
                                     <div class="d-flex flex-column">
                                         <div class="duration mb-3">
                                             <h4>Duration</h4>
-                                            <p><i class="fas fa-calendar-alt me-3"></i>12 Jan 2021 - 12 Feb 2021</p>
-                                            <p><i class="fas fa-clock me-3"></i>1 Month</p>
+                                            <p class="d-flex align-items-center"><i class="fas fa-calendar-alt me-3"></i>{{.Project.Sdate}} - {{.Project.Edate}}</p>
+                                            <p class="d-flex align-items-center"><i class="fas fa-clock me-3"></i>{{.Project.Duration}}</p>
                                         </div>
 
                                         <div class="technology">
                                             <h4>Technology</h4>
-                                            <div class="d-flex flex-row" style="column-gap: 50px;">
-                                                <p><i class="fab fa-react me-3"></i>React Js</p>
-                                                <p><i class="fab fa-node-js me-3"></i>Node Js</p>
-                                            </div>
-                                            <div class="d-flex flex-row" style="column-gap: 50px;">
-                                                <p><i class="fab fa-react me-3"></i>React Js</p>
-                                                <p><i class="fab fa-node-js me-3"></i>Node Js</p>
+                                            <div class="grid-container">
+                                                <!-- <div class="col-6"> -->
+                                                    <p class="d-flex align-items-center"><i class="fab fa-php me-3"></i>PHP</p>
+                                                <!-- </div> -->
+                                                <!-- <div class="col-6"> -->
+                                                    <p class="d-flex align-items-center"><i class="fab fa-js-square me-3"></i>Javascript</p>
+                                                <!-- </div> -->
+                                                <!-- <div class="col-6"> -->
+                                                    <p class="d-flex align-items-center"><i class="fab fa-python me-3"></i>Python</p>
+                                                <!-- </div> -->
+                                                <!-- <div class="col-6"> -->
+                                                    <p class="d-flex align-items-center"><i class="fab fa-html5 me-3"></i>HTML</p>
+                                                <!-- </div>                                                                                              -->
                                             </div>
                                         </div>
                                     </div>
@@ -123,15 +129,7 @@
                     <!-- Lower Content -->
                     <div class="container mt-4">
                         <p style="text-align: justify">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla vitae urna cursus, commodo ex quis, finibus velit. Suspendisse et purus consequat, venenatis mi sit amet, pulvinar ante. Aliquam egestas nulla sed rutrum dictum. Sed pulvinar nulla orci, sit amet aliquet nulla bibendum id. Sed elementum justo tristique arcu finibus, placerat lacinia dolor pulvinar. Aliquam erat volutpat. Donec tristique gravida ipsum a ultrices. Nulla laoreet dapibus sem, et interdum nisi euismod ut. Quisque fringilla nibh in velit suscipit rhoncus. Praesent ac aliquet neque, vel molestie arcu. Integer nec turpis ac nisl convallis varius.
-                            <br>
-                            <br>
-                            Suspendisse potenti. Mauris nec eros eu lorem dapibus venenatis. Etiam nec dignissim ante. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nunc et magna id eros pharetra elementum. Sed eget magna augue. In quis elit at neque gravida tempus. Quisque id finibus lectus. Sed ac ipsum tristique, rutrum augue a, blandit felis. Mauris nunc nisi, ornare vitae erat nec, tristique venenatis risus.
-                            <br>
-                            <br>
-                            Sed condimentum, purus eu vulputate facilisis, sapien est tincidunt libero, eu venenatis turpis enim ac enim. Sed vestibulum leo odio, ac pharetra dolor tincidunt vitae. Curabitur sit amet malesuada urna, ac venenatis lacus. Cras lacus purus, consequat sed mollis sit amet, pulvinar ac augue. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Morbi nec augue neque. Duis commodo orci sodales lectus commodo ultrices. Cras ullamcorper tincidunt lacus vitae molestie. Praesent elementum, dolor ut feugiat rhoncus, nisi tellus vestibulum ante, sit amet laoreet purus nisl vitae diam. Nam mi felis, interdum nec tellus at, dignissim convallis elit. Nullam ut sapien pharetra, fermentum lacus sed, commodo sapien.
-                            <br>
-                            <br>
+                            {{.Project.Description}}
                         </p>
                     </div>
                     <!-- End Lower Content -->

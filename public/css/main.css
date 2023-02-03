@@ -310,10 +310,24 @@ input[type=file]{
 /*--------------------------------------------------------------
 # Project Blog
 --------------------------------------------------------------*/
+.project-blog-upper{
+    height: 450px;
+}
+
+.project-blog-image{
+    overflow: hidden;
+}
+
 .blog-right-side h4{
     font-size: 22px;
     font-weight: 500;
     margin-bottom: 20px;
+}
+
+.grid-container {
+    display: grid;
+    row-gap: 10px;
+    grid-template-columns: auto auto;
 }
 
 .blog-right-side i{
@@ -325,7 +339,6 @@ input[type=file]{
     font-size: 15px;
     color: #615f5f;
 }
-
 
 /*--------------------------------------------------------------
 # Media Screen

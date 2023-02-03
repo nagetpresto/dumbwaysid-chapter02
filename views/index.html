@@ -160,10 +160,11 @@
 
                     <!-- Project Card -->
                     <div class="d-flex justify-content-start align-items-center">
-                        <div class="row my-project">
+                        <div class="row my-project w-100">
                             <!-- Dynamic Card -->
+                            {{range $index, $data := .ProjectCard}}
                             <div class="col-12 col-md-6 col-lg-4">
-                                <div class="card shadow card-project px-3 py-3">
+                                <div class="card shadow card-project px-3 py-3">                  
                                     <div class="column">
                                         <!-- Project Photo -->
                                         <div class="card-project-photo d-flex justify-content-center align-items-center">
@@ -176,198 +177,46 @@
                                             <div class="column project-content">
                                                 <!-- Project Title -->
                                                 <div class="card-title card-project" id="title">
-                                                    <a href="project/001">CRUD WEB</a>
-                                                    <p class="mt-0">Duration: 3 Month(s)</p>
+                                                    <a target="_blank" href="project/{{$index}}">{{$data.Pname}}</a>
+                                                    <p class="mt-0">{{$data.Duration}}</p>
                                                 </div>
                                                 <!-- End Project Title -->
 
                                                 <!-- Project Description -->
                                                 <div class="card-text card-project pt-3" id="description">
-                                                    ashasjf hsdds a asdass sadasdadsasd sadasd 
-                                                    ass sadasdadsasd sadasd                             
+                                                    {{$data.Description}}                            
                                                 </div>
                                                 <!-- Project Description -->
 
                                                 <!-- Icon -->
                                                 <div class="project-icon d-flex flex-row align-items-center">
                                                     <span class="icon d-flex flex-row">
-                                                        <i class="fab fa-php me-4"></i>
-                                                        <i class="fab fa-js-square me-4"></i>
-                                                        <i class="fab fa-python me-4"></i>
-                                                        <i class="fab fa-html5 me-4"></i>    
+                                                        <i class="{{$data.Icon1}}"></i>
+                                                        <i class="{{$data.Icon2}}"></i>
+                                                        <i class="{{$data.Icon3}}"></i>
+                                                        <i class="{{$data.Icon4}}"></i>    
                                                     </span>
                                                 </div>
                                                 <!-- End Icon -->
 
                                                 <!-- Project Button -->
+                                                {{if $.Data.IsLogin}}
                                                 <div class="project-button d-flex flex-row align-items-center">
-                                                    <button type="button" name="edit" id="edit" class="btn btn-outline-light btn-sm px-3 py-1 btn-edit">Edit</button>
-                                                    <button type="button" name="delete" id="delete" class="btn btn-outline-light btn-sm px-3 py-1 btn-delete">Delete</button>
+                                                    <a href="/edit-card/{{$index}}" class="btn btn-outline-light btn-sm px-3 py-1 btn-edit" name="edit" id="edit" href="/contact-me" role="button">Edit</a>
+                                                    <a href="/delete-card/{{$index}}" class="btn btn-outline-light btn-sm px-3 py-1 btn-delete" name="delete" id="delete" href="/contact-me" role="button">Delete</a>
                                                 </div>
+                                                {{end}}
                                                 <!-- End Project Button -->
                                             </div>
                                         </div>
                                         <!-- End Project Body -->
                                     </div>  
                                 </div>
+                                
                             </div>
+                            {{end}}
                             <!-- End Dynamic Card -->
-
-                            <!-- Dynamic Card -->
-                            <div class="col-12 col-md-6 col-lg-4">
-                                <div class="card shadow card-project px-3 py-3">
-                                    <div class="column">
-                                        <!-- Project Photo -->
-                                        <div class="card-project-photo d-flex justify-content-center align-items-center">
-                                            <img src="/public/img/card02.jpeg" class="project-photo" alt="Project Photo">
-                                        </div>
-                                        <!-- End Project Photo -->
-
-                                        <!-- Project Body -->
-                                        <div class="card-body card-project px-0">
-                                            <div class="column project-content">
-                                                <!-- Project Title -->
-                                                <div class="card-title card-project" id="title">
-                                                    <a href="project/001">CRUD WEB</a>
-                                                    <p class="mt-0">Duration: 3 Month(s)</p>
-                                                </div>
-                                                <!-- End Project Title -->
-
-                                                <!-- Project Description -->
-                                                <div class="card-text card-project pt-3" id="description">
-                                                    ashasjf hsdds a asdass sadasdadsasd sadasd 
-                                                    ass sadasdadsasd sadasd                             
-                                                </div>
-                                                <!-- Project Description -->
-
-                                                <!-- Icon -->
-                                                <div class="project-icon d-flex flex-row align-items-center">
-                                                    <span class="icon d-flex flex-row">
-                                                        <i class="fab fa-php me-4"></i>
-                                                        <i class="fab fa-js-square me-4"></i>
-                                                        <i class="fab fa-python me-4"></i>
-                                                        <i class="fab fa-html5 me-4"></i>     
-                                                    </span>
-                                                </div>
-                                                <!-- End Icon -->
-
-                                                <!-- Project Button -->
-                                                <div class="project-button d-flex flex-row align-items-center">
-                                                    <button type="button" name="edit" id="edit" class="btn btn-outline-light btn-sm px-3 py-1 btn-edit">Edit</button>
-                                                    <button type="button" name="delete" id="delete" class="btn btn-outline-light btn-sm px-3 py-1 btn-delete">Delete</button>
-                                                </div>
-                                                <!-- End Project Button -->
-                                            </div>
-                                        </div>
-                                        <!-- End Project Body -->
-                                    </div>  
-                                </div>
-                            </div>
-                            <!-- End Dynamic Card -->
-
-                            <!-- Dynamic Card -->
-                            <div class="col-12 col-md-6 col-lg-4">
-                                <div class="card shadow card-project px-3 py-3">
-                                    <div class="column">
-                                        <!-- Project Photo -->
-                                        <div class="card-project-photo d-flex justify-content-center align-items-center">
-                                            <img src="/public/img/card03.jpeg" class="project-photo" alt="Project Photo">
-                                        </div>
-                                        <!-- End Project Photo -->
-
-                                        <!-- Project Body -->
-                                        <div class="card-body card-project px-0">
-                                            <div class="column project-content">
-                                                <!-- Project Title -->
-                                                <div class="card-title card-project" id="title">
-                                                    <a href="project/001">CRUD WEB</a>
-                                                    <p class="mt-0">Duration: 3 Month(s)</p>
-                                                </div>
-                                                <!-- End Project Title -->
-
-                                                <!-- Project Description -->
-                                                <div class="card-text card-project pt-3" id="description">
-                                                    ashasjf hsdds a asdass sadasdadsasd sadasd 
-                                                    ass sadasdadsasd sadasd                             
-                                                </div>
-                                                <!-- Project Description -->
-
-                                                <!-- Icon -->
-                                                <div class="project-icon d-flex flex-row align-items-center">
-                                                    <span class="icon d-flex flex-row">
-                                                        <i class="fab fa-php me-4"></i>
-                                                        <i class="fab fa-js-square me-4"></i>
-                                                        <i class="fab fa-python me-4"></i>
-                                                        <i class="fab fa-html5 me-4"></i>     
-                                                    </span>
-                                                </div>
-                                                <!-- End Icon -->
-
-                                                <!-- Project Button -->
-                                                <div class="project-button d-flex flex-row align-items-center">
-                                                    <button type="button" name="edit" id="edit" class="btn btn-outline-light btn-sm px-3 py-1 btn-edit">Edit</button>
-                                                    <button type="button" name="delete" id="delete" class="btn btn-outline-light btn-sm px-3 py-1 btn-delete">Delete</button>
-                                                </div>
-                                                <!-- End Project Button -->
-                                            </div>
-                                        </div>
-                                        <!-- End Project Body -->
-                                    </div>  
-                                </div>
-                            </div>
-                            <!-- End Dynamic Card -->
-
-                            <!-- Dynamic Card -->
-                            <div class="col-12 col-md-6 col-lg-4">
-                                <div class="card shadow card-project px-3 py-3">
-                                    <div class="column">
-                                        <!-- Project Photo -->
-                                        <div class="card-project-photo d-flex justify-content-center align-items-center">
-                                            <img src="/public/img/card04.jpeg" class="project-photo" alt="Project Photo">
-                                        </div>
-                                        <!-- End Project Photo -->
-
-                                        <!-- Project Body -->
-                                        <div class="card-body card-project px-0">
-                                            <div class="column project-content">
-                                                <!-- Project Title -->
-                                                <div class="card-title card-project" id="title">
-                                                    <a href="project/001">CRUD WEB</a>
-                                                    <p class="mt-0">Duration: 3 Month(s)</p>
-                                                </div>
-                                                <!-- End Project Title -->
-
-                                                <!-- Project Description -->
-                                                <div class="card-text card-project pt-3" id="description">
-                                                    ashasjf hsdds a asdass sadasdadsasd sadasd 
-                                                    ass sadasdadsasd sadasd                             
-                                                </div>
-                                                <!-- Project Description -->
-
-                                                <!-- Icon -->
-                                                <div class="project-icon d-flex flex-row align-items-center">
-                                                    <span class="icon d-flex flex-row">
-                                                        <i class="fab fa-php me-4"></i>
-                                                        <i class="fab fa-js-square me-4"></i>
-                                                        <i class="fab fa-python me-4"></i>
-                                                        <i class="fab fa-html5 me-4"></i>    
-                                                    </span>
-                                                </div>
-                                                <!-- End Icon -->
-
-                                                <!-- Project Button -->
-                                                <div class="project-button d-flex flex-row align-items-center">
-                                                    <button type="button" name="edit" id="edit" class="btn btn-outline-light btn-sm px-3 py-1 btn-edit">Edit</button>
-                                                    <button type="button" name="delete" id="delete" class="btn btn-outline-light btn-sm px-3 py-1 btn-delete">Delete</button>
-                                                </div>
-                                                <!-- End Project Button -->
-                                            </div>
-                                        </div>
-                                        <!-- End Project Body -->
-                                    </div>  
-                                </div>
-                            </div>
-                            <!-- End Dynamic Card -->
+                            
                         </div>
                     </div>
                     <!-- End Project Card -->
