@@ -5,6 +5,7 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat:500');
 
 body{
+    background-color: #E3E7EB;
     color:#000000;
     font-size: 15px;
     font-weight: 500;
@@ -310,24 +311,15 @@ input[type=file]{
 /*--------------------------------------------------------------
 # Project Blog
 --------------------------------------------------------------*/
-.project-blog-upper{
-    height: 450px;
-}
-
 .project-blog-image{
     overflow: hidden;
+    height: 430px;
 }
 
 .blog-right-side h4{
     font-size: 22px;
     font-weight: 500;
     margin-bottom: 20px;
-}
-
-.grid-container {
-    display: grid;
-    row-gap: 10px;
-    grid-template-columns: auto auto;
 }
 
 .blog-right-side i{
@@ -343,7 +335,7 @@ input[type=file]{
 /*--------------------------------------------------------------
 # Media Screen
 --------------------------------------------------------------*/
-@media (min-width: 200px) and (max-width: 780px){
+@media (min-width: 200px) and (max-width: 760px){
     .container-fluid.home-upper,.container-fluid.home-lower{
         padding: 30px 20px 30px 20px; 
     }
@@ -370,13 +362,45 @@ input[type=file]{
     .card.card-project{
         width: 100%;
     }
-    
+
+    .project-blog-image{
+        overflow: hidden;
+        height: 200px;
+    }
     
 }
 
-@media (min-width: 781px) and (max-width: 999px) {
+@media (min-width: 761px) and (max-width: 999px) {
+    .container-fluid.home-upper,.container-fluid.home-lower{
+        padding: 30px 20px 30px 20px; 
+    }
+    
+    .card.home-card{
+        border-radius: 7px;
+        padding: 30px 25px 30px 25px; 
+    }
+
+    .card.card-profile{
+        width: 15rem;
+        height: 20rem;
+    }
+
+    .card-body.card-profile h5{
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    .card-body.card-profile p{
+        font-size: 12px;
+    }
+
     .card.card-project{
         width: 100%;
+    }
+
+    .project-blog-image{
+        overflow: hidden;
+        height: 350px;
     }
     
 }
