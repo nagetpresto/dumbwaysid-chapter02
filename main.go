@@ -337,7 +337,7 @@ func editCard(w http.ResponseWriter, r *http.Request){
         "Data":  Data,
         "Project": editCard,
     }
-    
+
     // execute file
     tmpl.Execute(w, resp)
 
@@ -504,6 +504,9 @@ func updateCard(w http.ResponseWriter, r *http.Request){
 func deleteCard(w http.ResponseWriter, r *http.Request){
     // var for storing & converting type of the id
     id, _ := strconv.Atoi(mux.Vars(r)["id"])
+
+    // update value of id from Data (global var)
+    ID[0].Id = id
 
     // selecting data to be displayed (... for excluding)
     ProjectCard = append(ProjectCard[:id], ProjectCard[id+1:]...)
