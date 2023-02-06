@@ -104,10 +104,21 @@
                                         <div class="technology">
                                             <h4>Technology</h4>
                                             <div class="d-flex flex-row flex-wrap" style="row-gap: 5px;">
-                                                <p class="{{.Project.Icon1PClass}}"><i class="{{.Project.Icon1}}"></i>{{.Project.Icon1P}}</p>
-                                                <p class="{{.Project.Icon2PClass}}"><i class="{{.Project.Icon2}}"></i>{{.Project.Icon2P}}</p>
-                                                <p class="{{.Project.Icon3PClass}}"><i class="{{.Project.Icon3}}"></i>{{.Project.Icon3P}}</p>
-                                                <p class="{{.Project.Icon4PClass}}"><i class="{{.Project.Icon4}}"></i>{{.Project.Icon4P}}</p>
+                                                {{if $.Project.IsIcon1}}
+                                                <p class="d-flex align-items-center col-6"><i class="fab fa-php me-3"></i>PHP</p>
+                                                {{end}}
+                                                
+                                                {{if $.Project.IsIcon2}}
+                                                <p class="d-flex align-items-center col-6"><i class="fab fa-js-square me-3"></i>Javascript</p>
+                                                {{end}}
+                                                
+                                                {{if $.Project.IsIcon3}}
+                                                <p class="d-flex align-items-center col-6"><i class="fab fa-python me-3"></i>Python</p>
+                                                {{end}}
+                                                
+                                                {{if $.Project.IsIcon4}}
+                                                <p class="d-flex align-items-center col-6"><i class="fab fa-html5 me-3"></i>HTML</p>
+                                                {{end}}
                                             </div>
                                         </div>
                                     </div>

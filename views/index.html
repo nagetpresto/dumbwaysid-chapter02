@@ -191,10 +191,21 @@
                                                 <!-- Icon -->
                                                 <div class="project-icon d-flex flex-row align-items-center">
                                                     <span class="icon d-flex flex-row">
-                                                        <i class="{{$data.Icon1}}"></i>
-                                                        <i class="{{$data.Icon2}}"></i>
-                                                        <i class="{{$data.Icon3}}"></i>
-                                                        <i class="{{$data.Icon4}}"></i>    
+                                                        {{if $data.IsIcon1}}
+                                                        <i class="fab fa-php me-3"></i>
+                                                        {{end}}
+
+                                                        {{if $data.IsIcon2}}
+                                                        <i class="fab fa-js-square me-3"></i>
+                                                        {{end}}
+
+                                                        {{if $data.IsIcon3}}
+                                                        <i class="fab fa-python me-3"></i>
+                                                        {{end}}
+
+                                                        {{if $data.IsIcon4}}
+                                                        <i class="fab fa-html5 me-3"></i> 
+                                                        {{end}}   
                                                     </span>
                                                 </div>
                                                 <!-- End Icon -->

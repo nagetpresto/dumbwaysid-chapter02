@@ -1,4 +1,3 @@
-
 /*--------------------------------------------------------------
 # General
 --------------------------------------------------------------*/
@@ -30,10 +29,7 @@ type Project struct {
     EdateDetail string
     Duration    string
     Description string
-    IsIcon1     bool
-    IsIcon2     bool
-    IsIcon3     bool
-    IsIcon4     bool
+    Icon        []string
 }
 
 var ID = []Project{
@@ -51,10 +47,7 @@ var ProjectCard = []Project{
         EdateDetail:    "02 September 2023",
         Duration:       "3 Month(s)",
         Description:    "asdas asdsad asdas asd",
-        IsIcon1:         true,
-        IsIcon2:         true,
-        IsIcon3:         true,
-        IsIcon4:         true,
+        Icon:           []string{"false", "true", "true", "true"},
     },
 }
 
@@ -158,23 +151,20 @@ func addCard(w http.ResponseWriter, r *http.Request) {
     // getting icon
     tech := []string{r.Form.Get("c1"),r.Form.Get("c2"),r.Form.Get("c3"),r.Form.Get("c4")}
 
-    IsIcon1 := false
-    IsIcon2 := false
-    IsIcon3 := false
-    IsIcon4 := false
+    techVal := []string{"false", "false","false","false"}
 
     // conditional for tech icon
     if tech[0] != "" {
-        IsIcon1 = true
+        techVal[0] = "true"
     }
     if tech[1] != "" {
-        IsIcon2 = true
+        techVal[1] = "true"
     }
     if tech[2] != "" {
-        IsIcon3 = true
+        techVal[2] = "true"
     }
     if tech[3] != "" {
-        IsIcon4 = true
+        techVal[3] = "true"
     }
     
     // create temporary variable for storing data from input form (array)
@@ -186,16 +176,12 @@ func addCard(w http.ResponseWriter, r *http.Request) {
         EdateDetail:    eDateFinal,
         Duration:       "3 Month(s)",
         Description:    description,
-        IsIcon1:        IsIcon1,
-        IsIcon2:        IsIcon2,
-        IsIcon3:        IsIcon3,
-        IsIcon4:        IsIcon4,
+        Icon:           techVal,
 
     }
 
     // adding to the global variable
     ProjectCard = append(ProjectCard, newProjectCard)
-
     // redirect to home
     http.Redirect(w, r, "/", http.StatusMovedPermanently)
 }
@@ -233,10 +219,7 @@ func editCard(w http.ResponseWriter, r *http.Request){
                 EdateDetail:    data.EdateDetail,
                 Duration:       "3 Month(s)",
                 Description:    data.Description,
-                IsIcon1:        data.IsIcon1,
-                IsIcon2:        data.IsIcon2,
-                IsIcon3:        data.IsIcon3,
-                IsIcon4:        data.IsIcon4,
+                Icon:           data.Icon,
             }
         }
     }
@@ -289,37 +272,43 @@ func updateCard(w http.ResponseWriter, r *http.Request){
     // getting icon
     tech := []string{r.Form.Get("c1"),r.Form.Get("c2"),r.Form.Get("c3"),r.Form.Get("c4")}
 
-    IsIcon1 := false
-    IsIcon2 := false
-    IsIcon3 := false
-    IsIcon4 := false
+    techVal := []string{"false", "false","false","false"}
 
     // conditional for tech icon
     if tech[0] != "" {
-        IsIcon1 = true
+        techVal[0] = "true"
     }
     if tech[1] != "" {
-        IsIcon2 = true
+        techVal[1] = "true"
     }
     if tech[2] != "" {
-        IsIcon3 = true
+        techVal[2] = "true"
     }
     if tech[3] != "" {
-        IsIcon4 = true
+        techVal[3] = "true"
+    }
+
+    // create temporary variable for storing data from input form (array)
+    var updateProjectCard = Project{
+        Pname:          pName,
+        Sdate:          sDateForm,
+        SdateDetail:    sDateFinal,
+        Edate:          eDateForm,
+        EdateDetail:    eDateFinal,
+        Duration:       "3 Month(s)",
+        Description:    description,
+        Icon:           techVal, 
     }
 
     // updating data/value
-    ProjectCard[ID[0].Id].Pname       = pName
-    ProjectCard[ID[0].Id].Sdate       = sDateForm
-    ProjectCard[ID[0].Id].SdateDetail = sDateFinal
-    ProjectCard[ID[0].Id].Edate       = eDateForm
-    ProjectCard[ID[0].Id].EdateDetail = eDateFinal
-    ProjectCard[ID[0].Id].Duration    = "3 Month(s)"
-    ProjectCard[ID[0].Id].Description = description
-    ProjectCard[ID[0].Id].IsIcon1     = IsIcon1
-    ProjectCard[ID[0].Id].IsIcon2     = IsIcon2
-    ProjectCard[ID[0].Id].IsIcon3     = IsIcon3
-    ProjectCard[ID[0].Id].IsIcon4     = IsIcon4
+    ProjectCard[ID[0].Id].Pname       = updateProjectCard.Pname
+    ProjectCard[ID[0].Id].Sdate       = updateProjectCard.Sdate
+    ProjectCard[ID[0].Id].SdateDetail = updateProjectCard.SdateDetail
+    ProjectCard[ID[0].Id].Edate       = updateProjectCard.Edate
+    ProjectCard[ID[0].Id].EdateDetail = updateProjectCard.EdateDetail
+    ProjectCard[ID[0].Id].Duration    = updateProjectCard.Duration
+    ProjectCard[ID[0].Id].Description = updateProjectCard.Description
+    ProjectCard[ID[0].Id].Icon        = updateProjectCard.Icon
 
     // redirect to home
     http.Redirect(w, r, "/", http.StatusMovedPermanently)
@@ -373,10 +362,7 @@ func projectBlog(w http.ResponseWriter, r *http.Request) {
                 EdateDetail:    data.EdateDetail,
                 Duration:       "3 Month(s)",
                 Description:    data.Description,
-                IsIcon1:        data.IsIcon1,
-                IsIcon2:        data.IsIcon2,
-                IsIcon3:        data.IsIcon3,
-                IsIcon4:        data.IsIcon4,
+                Icon:           data.Icon,
             }
         }
     }

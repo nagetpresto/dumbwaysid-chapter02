@@ -111,23 +111,39 @@
                                 <label for="checkbox">Technologies</label>
                                 <div class="checkbox mt-3 d-flex flex-row" id="checkbox" name="checkbox">
                                     <div class="form-check col-4">
-                                        <input type="checkbox" class="form-check-input" name="c1" id="c1" {{.Project.Icon1Status}}>
+                                        {{if .Project.IsIcon1}}
+                                        <input type="checkbox" class="form-check-input" name="c1" id="c1" checked>
+                                        {{else}}
+                                        <input type="checkbox" class="form-check-input" name="c1" id="c1">
+                                        {{end}}
                                         <label class="form-check-label" for="c1">PHP</label>
                                     </div>
 
                                     <div class="form-check col-4">
-                                        <input type="checkbox" class="form-check-input" name="c2" id="c2" {{.Project.Icon2Status}}>
+                                        {{if .Project.IsIcon2}}
+                                        <input type="checkbox" class="form-check-input" name="c2" id="c2" checked>
+                                        {{else}}
+                                        <input type="checkbox" class="form-check-input" name="c2" id="c2">
+                                        {{end}}
                                         <label class="form-check-label" for="c2">Javascript</label>
                                     </div>
                                 </div>
                                 <div class="checkbox mt-3 d-flex flex-row" id="checkbox" name="checkbox">
                                     <div class="form-check col-4">
-                                        <input type="checkbox" class="form-check-input" name="c3" id="c3" {{.Project.Icon3Status}}>
+                                        {{if .Project.IsIcon3}}
+                                        <input type="checkbox" class="form-check-input" name="c3" id="c3" checked>
+                                        {{else}}
+                                        <input type="checkbox" class="form-check-input" name="c3" id="c3">
+                                        {{end}}
                                         <label class="form-check-label" for="c3">Python</label>
                                     </div>
 
                                     <div class="form-check col-4">
-                                        <input type="checkbox" class="form-check-input" name="c4" id="c4" {{.Project.Icon4Status}}>
+                                        {{if .Project.IsIcon4}}
+                                        <input type="checkbox" class="form-check-input" name="c4" id="c4" checked>
+                                        {{else}}
+                                        <input type="checkbox" class="form-check-input" name="c4" id="c4">
+                                        {{end}}
                                         <label class="form-check-label" for="c4">HTML</label>
                                     </div>
                                 </div>
