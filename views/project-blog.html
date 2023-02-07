@@ -72,9 +72,10 @@
         <section class="home d-flex justify-content-center align-items-center" data-aos="fade-down" data-aos-duration="500">
             <div class="container-fluid home-upper">
                 <div class="d-flex flex-column justify-content-center align-items-center">
+                    {{range $index, $data := .Project}}
                     <!-- Title -->
                     <div class="text-center">
-                        <h1>{{.Project.Pname}}</h1>
+                        <h1>{{$data.Pname}}</h1>
                     </div>                
                     <!-- End Title -->
 
@@ -97,27 +98,18 @@
                                     <div class="d-flex flex-column">
                                         <div class="duration mb-3">
                                             <h4>Duration</h4>
-                                            <p class="d-flex align-items-center"><i class="fas fa-calendar-alt me-3"></i>{{.Project.SdateDetail}} - {{.Project.EdateDetail}}</p>
-                                            <p class="d-flex align-items-center"><i class="fas fa-clock me-3"></i>{{.Project.Duration}}</p>
+                                            <p class="d-flex align-items-center"><i class="fas fa-calendar-alt me-3"></i>{{$data.SdateDetail}} - {{$data.EdateDetail}}</p>
+                                            <p class="d-flex align-items-center"><i class="fas fa-clock me-3"></i>{{$data.Duration}}</p>
                                         </div>
 
                                         <div class="technology">
                                             <h4>Technology</h4>
                                             <div class="d-flex flex-row flex-wrap" style="row-gap: 5px;">
-                                                {{if $.Project.IsIcon1}}
-                                                <p class="d-flex align-items-center col-6"><i class="fab fa-php me-3"></i>PHP</p>
-                                                {{end}}
-                                                
-                                                {{if $.Project.IsIcon2}}
-                                                <p class="d-flex align-items-center col-6"><i class="fab fa-js-square me-3"></i>Javascript</p>
-                                                {{end}}
-                                                
-                                                {{if $.Project.IsIcon3}}
+                                                {{range $index, $data := $data.Technologies}}
+                                                <p class="d-flex align-items-center col-6"><i class="fab fa-{{$data}} me-3"></i></i>{{$data}}</p>
+                                                <!-- <p class="d-flex align-items-center col-6"><i class="fab fa-js-square me-3"></i>Javascript</p>
                                                 <p class="d-flex align-items-center col-6"><i class="fab fa-python me-3"></i>Python</p>
-                                                {{end}}
-                                                
-                                                {{if $.Project.IsIcon4}}
-                                                <p class="d-flex align-items-center col-6"><i class="fab fa-html5 me-3"></i>HTML</p>
+                                                <p class="d-flex align-items-center col-6"><i class="fab fa-html5 me-3"></i>HTML</p> -->
                                                 {{end}}
                                             </div>
                                         </div>
@@ -132,10 +124,11 @@
                     <!-- Lower Content -->
                     <div class="container mt-4">
                         <p style="text-align: justify">
-                            {{.Project.Description}}
+                            {{$data.Description}}
                         </p>
                     </div>
                     <!-- End Lower Content -->
+                {{end}}
                 </div>
                 
             </div>

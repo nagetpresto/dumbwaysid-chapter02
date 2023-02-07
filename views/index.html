@@ -162,7 +162,7 @@
                     <div class="d-flex justify-content-start align-items-center">
                         <div class="row my-project w-100">
                             <!-- Dynamic Card -->
-                            {{range $index, $data := .ProjectCard}}
+                            {{range $index, $data := .Project}}
                             <div class="col-12 col-md-6 col-lg-4">
                                 <div class="card shadow card-project px-3 py-3">                  
                                     <div class="column">
@@ -177,7 +177,7 @@
                                             <div class="column project-content">
                                                 <!-- Project Title -->
                                                 <div class="card-title card-project" id="title">
-                                                    <a target="_blank" href="project/{{$index}}">{{$data.Pname}}</a>
+                                                    <a target="_blank" href="project/{{$data.Id}}">{{$data.Pname}}</a>
                                                     <p class="mt-0">{{$data.Duration}}</p>
                                                 </div>
                                                 <!-- End Project Title -->
@@ -190,31 +190,21 @@
 
                                                 <!-- Icon -->
                                                 <div class="project-icon d-flex flex-row align-items-center">
+                                                    
                                                     <span class="icon d-flex flex-row">
-                                                        {{if $data.IsIcon1}}
-                                                        <i class="fab fa-php me-3"></i>
+                                                        {{range $index, $data := $data.Technologies}}
+                                                        <i class="fab fa-{{$data}} me-3"></i>
                                                         {{end}}
-
-                                                        {{if $data.IsIcon2}}
-                                                        <i class="fab fa-js-square me-3"></i>
-                                                        {{end}}
-
-                                                        {{if $data.IsIcon3}}
-                                                        <i class="fab fa-python me-3"></i>
-                                                        {{end}}
-
-                                                        {{if $data.IsIcon4}}
-                                                        <i class="fab fa-html5 me-3"></i> 
-                                                        {{end}}   
                                                     </span>
+                                                    
                                                 </div>
                                                 <!-- End Icon -->
 
                                                 <!-- Project Button -->
                                                 {{if $.Data.IsLogin}}
                                                 <div class="project-button d-flex flex-row align-items-center">
-                                                    <a href="/edit-card/{{$index}}" class="btn btn-outline-light btn-sm px-3 py-1 btn-edit" name="edit" id="edit" href="/contact-me" role="button">Edit</a>
-                                                    <a href="/delete-card/{{$index}}" class="btn btn-outline-light btn-sm px-3 py-1 btn-delete" name="delete" id="delete" href="/contact-me" role="button">Delete</a>
+                                                    <a href="/edit-card/{{$data.Id}}" class="btn btn-outline-light btn-sm px-3 py-1 btn-edit" name="edit" id="edit" href="/contact-me" role="button">Edit</a>
+                                                    <a href="/delete-card/{{$data.Id}}" class="btn btn-outline-light btn-sm px-3 py-1 btn-delete" name="delete" id="delete" href="/contact-me" role="button">Delete</a>
                                                 </div>
                                                 {{end}}
                                                 <!-- End Project Button -->
