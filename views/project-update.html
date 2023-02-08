@@ -80,71 +80,71 @@
 
                     <!-- Form -->
                     <div class="col-12 col-md-8 col-lg-5 mt-4">
-                        <form action="/update-card" method="POST">
+                        <form action="/edit-card/{{$.Id}}" method="POST">
+                            {{range $index, $data := .Project}}
                             <!-- Project Name -->
                             <div class="form-group mb-4">
                                 <label for="pName">Project Name</label>
-                                <input type="text" class="form-control shadow" value= "{{.Project.Pname}}" name="pName" id="pName">
+                                <input type="text" class="form-control shadow" value= "{{$data.Pname}}" name="pName" id="pName">
                             </div>
 
                             <!-- Date -->
                             <div class="date d-flex flex-row mb-4">
                                 <div class="form-group">
                                     <label for="sDate">Start Date</label>
-                                    <input type="date" class="form-control shadow" value= "{{.Project.Sdate}}" name="sDate" id="sDate" class="form-control">
+                                    <input type="date" class="form-control shadow" value= "{{$.sDate}}" name="sDate" id="sDate" class="form-control">
                                 </div>
 
                                 <div class="form-group">
                                     <label for="eDate">End Date</label>
-                                    <input type="date" class="form-control shadow" value= "{{.Project.Edate}}" name="eDate" id="eDate" class="form-control">
+                                    <input type="date" class="form-control shadow" value= "{{$.eDate}}" name="eDate" id="eDate" class="form-control">
                                 </div>
                             </div>
 
                             <!-- Description -->
                             <div class="form-group mb-4">
                                 <label for="description">Description</label>
-                                <textarea id="description" name="description" class="form-control shadow">{{.Project.Description}}</textarea>
+                                <textarea id="description" name="description" class="form-control shadow">{{$data.Description}}</textarea>
                             </div>
 
                             <!-- Technologies -->
                             <div class="form-group mb-4">
                                 <label for="checkbox">Technologies</label>
-                                <div class="checkbox mt-3 d-flex flex-row" id="checkbox" name="checkbox">
-                                    <div class="form-check col-4">
-                                        {{if .Project.IsIcon1}}
-                                        <input type="checkbox" class="form-check-input" name="c1" id="c1" checked>
+                                <div class="d-flex flex-row flex-wrap mt-3">
+                                    <div class="form-check col-6">
+                                        {{if $.IsPHP}}
+                                        <input type="checkbox" class="form-check-input" name="tech" value="php" checked>
                                         {{else}}
-                                        <input type="checkbox" class="form-check-input" name="c1" id="c1">
+                                        <input type="checkbox" class="form-check-input" name="tech" value="php">
                                         {{end}}
-                                        <label class="form-check-label" for="c1">PHP</label>
+                                        <label class="form-check-label">PHP</label>
                                     </div>
 
-                                    <div class="form-check col-4">
-                                        {{if .Project.IsIcon2}}
-                                        <input type="checkbox" class="form-check-input" name="c2" id="c2" checked>
+                                    <div class="form-check col-6">
+                                        {{if $.IsJS}}
+                                        <input type="checkbox" class="form-check-input" name="tech" value="js-square" checked>
                                         {{else}}
-                                        <input type="checkbox" class="form-check-input" name="c2" id="c2">
+                                        <input type="checkbox" class="form-check-input" name="tech" value="js-square">
                                         {{end}}
-                                        <label class="form-check-label" for="c2">Javascript</label>
-                                    </div>
-                                </div>
-                                <div class="checkbox mt-3 d-flex flex-row" id="checkbox" name="checkbox">
-                                    <div class="form-check col-4">
-                                        {{if .Project.IsIcon3}}
-                                        <input type="checkbox" class="form-check-input" name="c3" id="c3" checked>
-                                        {{else}}
-                                        <input type="checkbox" class="form-check-input" name="c3" id="c3">
-                                        {{end}}
-                                        <label class="form-check-label" for="c3">Python</label>
+                                        <label class="form-check-label">Javascript</label>
                                     </div>
 
-                                    <div class="form-check col-4">
-                                        {{if .Project.IsIcon4}}
-                                        <input type="checkbox" class="form-check-input" name="c4" id="c4" checked>
+                                    <div class="form-check col-6">
+                                        {{if $.IsPYTHON}}
+                                        <input type="checkbox" class="form-check-input" name="tech" value="python" checked>
                                         {{else}}
-                                        <input type="checkbox" class="form-check-input" name="c4" id="c4">
+                                        <input type="checkbox" class="form-check-input" name="tech" value="python">
                                         {{end}}
-                                        <label class="form-check-label" for="c4">HTML</label>
+                                        <label class="form-check-label">Python</label>
+                                    </div>
+
+                                    <div class="form-check col-6">
+                                        {{if $.IsHTML}}
+                                        <input type="checkbox" class="form-check-input" name="tech" value="html5" checked>
+                                        {{else}}
+                                        <input type="checkbox" class="form-check-input" name="tech" value="html5">
+                                        {{end}}
+                                        <label class="form-check-label">HTML</label>
                                     </div>
                                 </div>
                             </div>
@@ -166,14 +166,7 @@
                                 </div>
                             </div>
                             <!-- End Submiy Button -->
-
-                            
-
-                            
-
-
-
-
+                            {{end}}
                         </form>
                     </div>
                     <!-- End Form -->

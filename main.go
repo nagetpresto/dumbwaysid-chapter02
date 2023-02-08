@@ -58,7 +58,7 @@ func main() {
 	route.HandleFunc("/add-project", addProject).Methods("GET")
 	route.HandleFunc("/add-card", addCard).Methods("POST")
     route.HandleFunc("/edit-card/{id}", editCard).Methods("GET")
-    route.HandleFunc("/update-card", updateCard).Methods("POST")
+    route.HandleFunc("/edit-card/{id}", updateCard).Methods("POST")
     route.HandleFunc("/delete-card/{id}", deleteCard).Methods("GET")
 	route.HandleFunc("/project/{id}", projectBlog).Methods("GET")
 	route.HandleFunc("/contact-me", contactMe).Methods("GET")
@@ -134,7 +134,6 @@ func home(w http.ResponseWriter, r *http.Request) {
         "Project": result,
     }
 
-    fmt.Println(resp)
 	// execute file
     tmpl.Execute(w, resp)
 }
@@ -180,20 +179,26 @@ func addCard(w http.ResponseWriter, r *http.Request) {
     layoutFormat := "2006-01-02"
     sDateForm, _ := time.Parse(layoutFormat, sDate)
     eDateForm, _ := time.Parse(layoutFormat, eDate)
-    
-    // create temporary variable for storing data from input form (array)
-    var newProjectCard = Project{
-        Pname:          pName,
-        Sdate:          sDateForm,
-        Edate:          eDateForm,
-        Description:    description,
-        Technologies:   icon,
 
+    // duration validation
+    diff := (eDateForm.Sub(sDateForm)).Hours() // hour
+
+    if diff < 0 {
+        http.Error(w, "Duration is Invalid", http.StatusBadRequest)
+		return
     }
 
-    fmt.Println(newProjectCard)
+    sql := "INSERT INTO public.tb_project (pname, sdate, edate, description, technologies) VALUES ($1, $2, $3, $4, $5)"
+	_, errr := connection.Conn.Exec(context.Background(), sql, pName, sDateForm, eDateForm, description, icon)
+    // _, err = conn.Exec(context.Background(), sql, name, age, email)
+	if errr != nil {
+		fmt.Println("Unable to insert data:", errr)
+		return
+	}
 
-    // redirect to home
+	fmt.Println("Data inserted successfully.")
+
+    // redirect 
     http.Redirect(w, r, "/", http.StatusMovedPermanently)
 }
 
@@ -210,10 +215,57 @@ func editCard(w http.ResponseWriter, r *http.Request){
         return
     }
 
+    // var for storing id
+	id := (mux.Vars(r)["id"])
+    
+    // selecting query
+    sql := "SELECT id, pname, sdate, edate, description, technologies FROM public.tb_project WHERE id=$1;"
+	row := connection.Conn.QueryRow(context.Background(), sql, id)
+
+	var project Project
+	err = row.Scan(&project.Id, &project.Pname, &project.Sdate, &project.Edate, &project.Description, &project.Technologies)
+	if err != nil {
+		fmt.Println("Unable to retrieve data:", err)
+		return
+	}
+
+    // parsing date (change format)
+    sDate := project.Sdate.Format("2006-01-02")
+    eDate := project.Edate.Format("2006-01-02")
+
+    // tech
+    IsPHP := false
+    IsJS := false
+    IsPYTHON := false
+    IsHTML := false
+    for _, data := range project.Technologies {
+        if data == "php" {
+            IsPHP = true
+        }
+        if data == "js-square" {
+            IsJS = true
+        }
+        if data == "python" {
+            IsPYTHON = true
+        }
+        if data == "html5" {
+            IsHTML = true
+        }
+    }
+
+	result := []Project{project}
+
 	// mapping data to be displayed
     resp := map[string]interface{}{
         "Data":  Data,
-        // "Project": editCard,
+        "Id": id,
+        "Project": result,
+        "sDate": sDate,
+        "eDate": eDate,
+        "IsPHP" : IsPHP,
+        "IsJS" : IsJS,
+        "IsPYTHON" : IsPYTHON,
+        "IsHTML" : IsHTML,
     }
 
     // execute file
@@ -234,6 +286,40 @@ func updateCard(w http.ResponseWriter, r *http.Request){
         return
     }
 
+    // var for storing id
+	id := (mux.Vars(r)["id"])
+
+    // getting data from input form
+    pName       := r.PostForm.Get("pName")
+    sDate       := r.PostForm.Get("sDate")
+    eDate       := r.PostForm.Get("eDate")
+    description := r.PostForm.Get("description")
+    icon        := r.Form["tech"]
+
+    // parsing date (change format)
+    layoutFormat := "2006-01-02"
+    sDateForm, _ := time.Parse(layoutFormat, sDate)
+    eDateForm, _ := time.Parse(layoutFormat, eDate)
+
+    // duration validation
+    diff := (eDateForm.Sub(sDateForm)).Hours() // hour
+
+    if diff < 0 {
+        http.Error(w, "Duration is Invalid", http.StatusBadRequest)
+		return
+    }
+
+    // query to update
+    sql := "UPDATE public.tb_project SET pname=$1, sdate=$2, edate=$3, description=$4, technologies=$5 WHERE id=$6"
+	// executing query
+    _, errr := connection.Conn.Exec(context.Background(), sql, pName, sDateForm, eDateForm, description, icon, id)
+	if errr != nil {
+		fmt.Println("Unable to update data:", errr)
+		return
+	}
+
+	fmt.Println("Data updated successfully.")
+
     // redirect to home
     http.Redirect(w, r, "/", http.StatusMovedPermanently)
 }
@@ -242,6 +328,19 @@ func updateCard(w http.ResponseWriter, r *http.Request){
 # Delete Card Routing Function
 --------------------------------------------------------------*/
 func deleteCard(w http.ResponseWriter, r *http.Request){
+    // var for storing id
+	id := (mux.Vars(r)["id"])
+    
+    // query
+    sql := "DELETE FROM public.tb_project WHERE id=$1;"
+    
+	_, errr := connection.Conn.Exec(context.Background(), sql, id)
+	if errr != nil {
+		fmt.Println("Unable to delete data:", errr)
+		return
+	}
+
+	fmt.Println("Data deleted successfully.")
     
     http.Redirect(w, r, "/", http.StatusMovedPermanently)
 }
@@ -302,12 +401,36 @@ func projectBlog(w http.ResponseWriter, r *http.Request) {
         project.Duration = strconv.FormatFloat(DurDay, 'f', 0, 64) + " Days(s)"
     }
 
+    // tech
+    IsPHP := false
+    IsJS := false
+    IsPYTHON := false
+    IsHTML := false
+    for _, data := range project.Technologies {
+        if data == "php" {
+            IsPHP = true
+        }
+        if data == "js-square" {
+            IsJS = true
+        }
+        if data == "python" {
+            IsPYTHON = true
+        }
+        if data == "html5" {
+            IsHTML = true
+        }
+    }
+
 	result := []Project{project}
 
 	// mapping data to be displayed
     resp := map[string]interface{}{
         "Data":  Data,
         "Project": result,
+        "IsPHP" : IsPHP,
+        "IsJS" : IsJS,
+        "IsPYTHON" : IsPYTHON,
+        "IsHTML" : IsHTML,
     }
 
     // execute file

@@ -105,11 +105,20 @@
                                         <div class="technology">
                                             <h4>Technology</h4>
                                             <div class="d-flex flex-row flex-wrap" style="row-gap: 5px;">
-                                                {{range $index, $data := $data.Technologies}}
-                                                <p class="d-flex align-items-center col-6"><i class="fab fa-{{$data}} me-3"></i></i>{{$data}}</p>
-                                                <!-- <p class="d-flex align-items-center col-6"><i class="fab fa-js-square me-3"></i>Javascript</p>
+                                                {{if $.IsPHP}}
+                                                <p class="d-flex align-items-center col-6"><i class="fab fa-php me-3"></i></i>PHP</p>
+                                                {{end}}
+
+                                                {{if $.IsJS}}
+                                                <p class="d-flex align-items-center col-6"><i class="fab fa-js-square me-3"></i>Javascript</p>
+                                                {{end}}
+
+                                                {{if $.IsPYTHON}}
                                                 <p class="d-flex align-items-center col-6"><i class="fab fa-python me-3"></i>Python</p>
-                                                <p class="d-flex align-items-center col-6"><i class="fab fa-html5 me-3"></i>HTML</p> -->
+                                                {{end}}
+
+                                                {{if $.IsHTML}}
+                                                <p class="d-flex align-items-center col-6"><i class="fab fa-html5 me-3"></i>HTML</p>
                                                 {{end}}
                                             </div>
                                         </div>

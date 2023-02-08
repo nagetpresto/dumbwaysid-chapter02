@@ -78,57 +78,60 @@
                     </div>                
                     <!-- End Title -->
 
+                    <!-- Alert -->
+                    <div class="" id="alert" role="alert"></div>               
+                    <!-- End Alert -->
+
                     <!-- Form -->
                     <div class="col-12 col-md-8 col-lg-5 mt-4">
                         <form action="/add-card" method="POST">
                             <!-- Project Name -->
                             <div class="form-group mb-4">
                                 <label for="pName">Project Name</label>
-                                <input type="text" class="form-control shadow" name="pName" id="pName">
+                                <input type="text" class="form-control shadow" name="pName" id="pName" required>
                             </div>
 
                             <!-- Date -->
                             <div class="date d-flex flex-row mb-4">
                                 <div class="form-group">
                                     <label for="sDate">Start Date</label>
-                                    <input type="date" class="form-control shadow" name="sDate" id="sDate" class="form-control">
+                                    <input type="date" class="form-control shadow" name="sDate" id="sDate" class="form-control" required>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="eDate">End Date</label>
-                                    <input type="date" class="form-control shadow" name="eDate" id="eDate" class="form-control">
+                                    <input type="date" class="form-control shadow" name="eDate" id="eDate" class="form-control" required>
                                 </div>
                             </div>
 
                             <!-- Description -->
                             <div class="form-group mb-4">
                                 <label for="description">Description</label>
-                                <textarea id="description" name="description" class="form-control shadow"></textarea>
+                                <textarea id="description" name="description" class="form-control shadow" required></textarea>
                             </div>
 
                             <!-- Technologies -->
                             <div class="form-group mb-4">
                                 <label for="checkbox">Technologies</label>
-                                <div class="checkbox mt-3 d-flex flex-row" id="checkbox" name="checkbox">
-                                    <div class="form-check col-4">
+                                <div class="d-flex flex-row flex-wrap mt-3">
+                                    <div class="form-check col-6">
                                         <input type="checkbox" class="form-check-input" name="tech" value="php">
-                                        <label class="form-check-label" for="c1">PHP</label>
+                                        <label class="form-check-label">PHP</label>
                                     </div>
 
-                                    <div class="form-check col-4">
+                                    <div class="form-check col-6">
                                         <input type="checkbox" class="form-check-input" name="tech" value="js-square">
-                                        <label class="form-check-label" for="c2">Javascript</label>
-                                    </div>
-                                </div>
-                                <div class="checkbox mt-3 d-flex flex-row" id="checkbox" name="checkbox">
-                                    <div class="form-check col-4">
-                                        <input type="checkbox" class="form-check-input" name="tech" value="python">
-                                        <label class="form-check-label" for="c3">Python</label>
+                                        <label class="form-check-label">Javascript</label>
                                     </div>
 
-                                    <div class="form-check col-4">
+                                    <div class="form-check col-6">
+                                        <input type="checkbox" class="form-check-input" name="tech" value="python">
+                                        <label class="form-check-label">Python</label>
+                                    </div>
+
+                                    <div class="form-check col-6">
                                         <input type="checkbox" class="form-check-input" name="tech" value="html5">
-                                        <label class="form-check-label" for="c4">HTML</label>
+                                        <label class="form-check-label">HTML</label>
                                     </div>
                                 </div>
                             </div>
@@ -150,14 +153,6 @@
                                 </div>
                             </div>
                             <!-- End Submiy Button -->
-
-                            
-
-                            
-
-
-
-
                         </form>
                     </div>
                     <!-- End Form -->
