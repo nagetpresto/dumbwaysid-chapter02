@@ -52,7 +52,7 @@
                             <li class="nav-item me-5">
                                 <a class="nav-link" aria-current="page" href="/">Home</a>
                             </li>
-                            {{if $.IsLogin}}
+                            {{if $.Data.IsLogin}}
                             <li class="nav-item me-5">
                                 <a class="nav-link" href="/add-project">Add Project</a>
                             </li>
@@ -62,21 +62,12 @@
 
                         <!-- Right Side -->
                         <ul class="navbar-nav mt-2 mt-lg-0 mb-2 mb-lg-0">
-                            {{if $.IsLogin}}
                             <li class="nav-item">
-                                <a class="nav-link me-5" href="/"><i class="fas fa-user me-2"></i>{{.Name}}</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link me-5" href="/logout">Logout</a>
-                            </li>
-                            {{else}}
-                            <li class="nav-item">
-                                <a class="nav-link me-5" href="/register">Register</a>
+                                <a class="nav-link me-5 active" href="/register">Register</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link me-5" href="/login">Login</a>
                             </li>
-                            {{end}}
                         </ul>
                         <a class="btn btn-outline-light btn-sm px-3 py-1" href="/contact-me" role="button">Contact Me</a>
                         <!-- End Right Side -->
@@ -93,7 +84,7 @@
                 <div class="d-flex flex-column justify-content-center align-items-center">
                     <!-- Title -->
                     <div class="text-center">
-                        <h1>GET IN TOUCH</h1>
+                        <h1>REGISTER YOUR ACCOUNT</h1>
                     </div>                
                     <!-- End Title -->
 
@@ -103,49 +94,29 @@
 
                     <!-- Form -->
                     <div class="col-12 col-md-8 col-lg-5 mt-4">
-                        <form id="form">
+                        <form action="/register" method="POST">
                             <!-- Name -->
                             <div class="form-group mb-4">
                                 <label for="name">Name</label>
-                                <input type="text" class="form-control shadow" name="name" id="name">
+                                <input type="text" class="form-control shadow" name="name" id="name" required>
                             </div>
 
                             <!-- Email -->
                             <div class="form-group mb-4">
                             <label for="email">Email</label>
-                            <input type="email" name="email" id="email" class="form-control shadow">
+                            <input type="email" name="email" id="email" class="form-control shadow" required>
                             </div>
 
-                            <!-- Phone -->
+                            <!-- Password -->
                             <div class="form-group mb-4">
-                            <label for="phone">Phone Number</label>
-                            <input type="tel" name="phone" id="phone" class="form-control shadow">
-                            </div>
-
-                            <!-- Subject -->
-                            <div class="form-group mb-4">
-                            <label>Subject</label>
-                            <div class="input-group shadow">                       
-                                <select class="form-select" name="subject" id="subject">
-                                    <option selected></option>
-                                    <option value="Hiring Matters">I want to hire you</option>
-                                    <option value="Discussion">I want to discuss something</option>
-                                    <option value="Collaboration">Let's do a collaboration</option>
-                                    <option value="Let's Talk">Let's be friends</option>
-                                </select>
-                            </div>
-                            </div>
-
-                            <!-- Comments -->
-                            <div class="form-group mb-4">
-                                <label for="description">Your Message</label>
-                                <textarea id="comments" name="comments" class="form-control shadow"></textarea>
+                            <label for="password">Password</label>
+                            <input type="password" name="password" id="password" class="form-control shadow" required>
                             </div>
 
                             <!-- Submit Button -->
                             <div class="form-group mt-5 d-flex justify-content-end align-items-center">
                                 <div class="button-group col-4 col-md-3 text-center">
-                                    <button type="button" onclick="getData ()" name="add" id="add" class="btn btn-outline-light btn-sm contact w-100">Submit</button>
+                                    <button type="submit" name="submit" id="submit" class="btn btn-outline-light btn-sm contact w-100">Submit</button>
                                 </div>
                             </div>
                             <!-- End Submiy Button -->

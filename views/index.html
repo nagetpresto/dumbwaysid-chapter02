@@ -26,7 +26,7 @@
     <body>
         <!-- NavBar -->
         <header>
-            <nav class="navbar fixed-top navbar-expand-md bg-body-tertiary bg-dark shadow" data-aos="fade-down" data-aos-duration="500">
+            <nav class="navbar fixed-top navbar-expand-lg bg-body-tertiary bg-dark shadow" data-aos="fade-down" data-aos-duration="500">
                 <div class="container px-3">
                     <!-- NavBar Logo -->
                     <a class="navbar-brand me-5" href="/">
@@ -52,13 +52,32 @@
                             <li class="nav-item me-5">
                                 <a class="nav-link active" aria-current="page" href="/">Home</a>
                             </li>
+                            {{if $.Data.IsLogin}}
                             <li class="nav-item me-5">
                                 <a class="nav-link" href="/add-project">Add Project</a>
                             </li>
+                            {{end}}
                         </ul>
                         <!-- End Left Side -->
 
                         <!-- Right Side -->
+                        <ul class="navbar-nav mt-2 mt-lg-0 mb-2 mb-lg-0">
+                            {{if $.Data.IsLogin}}
+                            <li class="nav-item">
+                                <a class="nav-link me-5" href="/"><i class="fas fa-user me-2"></i>{{.Data.Name}}</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link me-5" href="/logout">Logout</a>
+                            </li>
+                            {{else}}
+                            <li class="nav-item">
+                                <a class="nav-link me-5" href="/register">Register</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link me-5" href="/login">Login</a>
+                            </li>
+                            {{end}}
+                        </ul>
                         <a class="btn btn-outline-light btn-sm px-3 py-1" href="/contact-me" role="button">Contact Me</a>
                         <!-- End Right Side -->
 
@@ -159,7 +178,7 @@
                     <!-- End Lower Content Title -->
 
                     <!-- Project Card -->
-                    <div class="d-flex justify-content-start align-items-center">
+                    <div class="d-flex pe-xl-2 justify-content-center align-items-center">
                         <div class="row my-project w-100">
                             <!-- Dynamic Card -->
                             {{range $index, $data := .Project}}

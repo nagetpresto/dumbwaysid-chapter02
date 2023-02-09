@@ -15,6 +15,8 @@ import (
     "chapter02/connection"
     "context"
 
+    "golang.org/x/crypto/bcrypt"
+    "github.com/gorilla/sessions"
     "github.com/gorilla/mux"
 )
 
@@ -22,8 +24,9 @@ import (
 # Global var (object to send and be displayed in html)
 --------------------------------------------------------------*/
 var Data = map[string]interface{}{
-    "IsLogin": true,
-    "Alert": "sd",
+    "IsLogin"   : true,
+    "Name"      : "Bilkis",
+    "Alert"     : "sd",
 }
 
 type Project struct {
@@ -36,7 +39,13 @@ type Project struct {
     Duration        string
     Description     string
     Technologies    []string
-    Alert           string
+}
+
+type Users struct {
+    Id       int
+    Name     string
+    Email    string
+    Password string
 }
 
 /*--------------------------------------------------------------
@@ -62,12 +71,86 @@ func main() {
     route.HandleFunc("/delete-card/{id}", deleteCard).Methods("GET")
 	route.HandleFunc("/project/{id}", projectBlog).Methods("GET")
 	route.HandleFunc("/contact-me", contactMe).Methods("GET")
+    route.HandleFunc("/register", register).Methods("GET")
+    route.HandleFunc("/register", registerPost).Methods("POST")
+    route.HandleFunc("/login", login).Methods("GET")
+    route.HandleFunc("/login", loginPost).Methods("POST")
 
 	// starting server
     fmt.Println("Server running on port 5000")
     http.ListenAndServe("localhost:5000", route)
 }
 
+/*--------------------------------------------------------------
+# Parsing Time Function
+--------------------------------------------------------------*/
+func ParsingTime(startDate, endDate time.Time) (string, string, error){
+    var SdateDetail string
+    var EdateDetail string
+
+    sDateDay := strconv.Itoa(startDate.Day())
+    sDateMonth := startDate.Month().String()
+    sDateYear := strconv.Itoa(startDate.Year())
+    SdateDetail = sDateDay + " " + sDateMonth + " " + sDateYear
+
+    eDateDay := strconv.Itoa(endDate.Day())
+    eDateMonth := endDate.Month().String()
+    eDateYear := strconv.Itoa(endDate.Year())
+    EdateDetail = eDateDay + " " + eDateMonth + " " + eDateYear
+
+    return SdateDetail, EdateDetail, nil
+}
+/*--------------------------------------------------------------
+# Get Duration Function
+--------------------------------------------------------------*/
+
+func GetDuration(startDate, endDate time.Time) (string, error) {
+    diff := (endDate.Sub(startDate)).Hours() // hour
+
+    DurDay := math.Floor(diff / (24)) //in Day
+    DurWeek := math.Floor(DurDay / (7)) //in Week
+    DurMonth := math.Floor(DurDay / (30)) //in Month
+    DurYear := math.Floor(DurDay / (12 * 30)) //in Year
+
+    var Duration string
+    if DurYear > 0 {
+        Duration = strconv.FormatFloat(DurYear, 'f', 0, 64) + " Year(s)"
+    }else if DurMonth > 0 {
+        Duration = strconv.FormatFloat(DurMonth, 'f', 0, 64) + " Month(s)"
+    }else if DurWeek > 0 {
+        Duration = strconv.FormatFloat(DurWeek, 'f', 0, 64) + " Week(s)"
+    }else if DurDay > 0 {
+        Duration = strconv.FormatFloat(DurDay, 'f', 0, 64) + " Days(s)"
+    }
+
+    return Duration, nil
+}
+
+/*--------------------------------------------------------------
+# Technologies Chunk Function
+--------------------------------------------------------------*/
+func TechChunk(Technologies []string) (bool, bool, bool, bool, error){
+    IsPHP := false
+    IsJS := false
+    IsPYTHON := false
+    IsHTML := false
+    for _, data := range Technologies {
+        if data == "php" {
+            IsPHP = true
+        }
+        if data == "js-square" {
+            IsJS = true
+        }
+        if data == "python" {
+            IsPYTHON = true
+        }
+        if data == "html5" {
+            IsHTML = true
+        }
+    }
+
+    return IsPHP, IsJS, IsPYTHON, IsHTML, nil
+}
 /*--------------------------------------------------------------
 # Home Routing Function
 --------------------------------------------------------------*/
@@ -78,6 +161,16 @@ func home(w http.ResponseWriter, r *http.Request) {
     if err != nil {
         http.Error(w, err.Error(),http.StatusInternalServerError)
         return
+    }
+
+    var store = sessions.NewCookieStore([]byte("SESSION_ID"))
+    session, _ := store.Get(r, "SESSION_ID")
+
+    if session.Values["IsLogin"] != true {
+        Data["IsLogin"] = false
+    } else {
+        Data["IsLogin"] = session.Values["IsLogin"].(bool)
+        Data["Name"] = session.Values["Name"].(string)
     }
 
     // query
@@ -92,39 +185,26 @@ func home(w http.ResponseWriter, r *http.Request) {
 
         err := rows.Scan(&each.Id, &each.Pname, &each.Sdate, &each.Edate, &each.Description, &each.Technologies)
         if err != nil {
-            fmt.Println(err.Error())
+            http.Error(w, "Unable to retrieve data: " + err.Error(), http.StatusBadRequest)
             return
         }
 
-        // parsing date (change format)
-        sDateDay := strconv.Itoa(each.Sdate.Day())
-        sDateMonth := each.Sdate.Month().String()
-        sDateYear := strconv.Itoa(each.Sdate.Year())
-        each.SdateDetail = sDateDay + " " + sDateMonth + " " + sDateYear
-
-        eDateDay := strconv.Itoa(each.Edate.Day())
-        eDateMonth := each.Edate.Month().String()
-        eDateYear := strconv.Itoa(each.Edate.Year())
-        each.EdateDetail = eDateDay + " " + eDateMonth + " " + eDateYear
-
-        // get duration
-        diff := (each.Edate.Sub(each.Sdate)).Hours() // hour
-
-        DurYear := math.Round(diff / (12 * 30 * 24)) //in Year
-        DurMonth := math.Round(diff / (30 * 24)) //in Month
-        DurWeek := math.Round(diff / (7 * 24)) //in Day
-        DurDay := math.Round(diff / (24)) //in Day
-
-        if DurYear > 0 {
-            each.Duration =  strconv.FormatFloat(DurYear, 'f', 0, 64) + " Year(s)"
-        }else if DurMonth > 0 {
-            each.Duration = strconv.FormatFloat(DurMonth, 'f', 0, 64) + " Month(s)"
-        }else if DurWeek > 0 {
-            each.Duration = strconv.FormatFloat(DurWeek, 'f', 0, 64) + " Week(s)"
-        }else if DurDay > 0 {
-            each.Duration = strconv.FormatFloat(DurDay, 'f', 0, 64) + " Days(s)"
+        // output parsing tima function
+        SdateDetail, EdateDetail, err := ParsingTime(each.Sdate, each.Edate)
+        if err != nil {
+            http.Error(w, err.Error(),http.StatusInternalServerError)
+            return
         }
-           
+        each.SdateDetail = SdateDetail
+        each.EdateDetail = EdateDetail
+
+        // output get duration function
+        Duration, err := GetDuration(each.Sdate, each.Edate)
+        if err != nil {
+            http.Error(w, err.Error(),http.StatusInternalServerError)
+            return
+        }
+        each.Duration = Duration
         result = append(result, each)
     }
 
@@ -149,6 +229,16 @@ func addProject(w http.ResponseWriter, r *http.Request) {
     if err != nil {
         http.Error(w, err.Error(),http.StatusInternalServerError)
         return
+    }
+    
+    var store = sessions.NewCookieStore([]byte("SESSION_ID"))
+    session, _ := store.Get(r, "SESSION_ID")
+
+    if session.Values["IsLogin"] != true {
+        Data["IsLogin"] = false
+    } else {
+        Data["IsLogin"] = session.Values["IsLogin"].(bool)
+        Data["Name"] = session.Values["Name"].(string)
     }
 
 	// execute file
@@ -190,11 +280,10 @@ func addCard(w http.ResponseWriter, r *http.Request) {
 
     sql := "INSERT INTO public.tb_project (pname, sdate, edate, description, technologies) VALUES ($1, $2, $3, $4, $5)"
 	_, errr := connection.Conn.Exec(context.Background(), sql, pName, sDateForm, eDateForm, description, icon)
-    // _, err = conn.Exec(context.Background(), sql, name, age, email)
 	if errr != nil {
-		fmt.Println("Unable to insert data:", errr)
-		return
-	}
+        http.Error(w, "Unable to insert data: " + errr.Error(),  http.StatusBadRequest)
+        return
+    }
 
 	fmt.Println("Data inserted successfully.")
 
@@ -225,33 +314,24 @@ func editCard(w http.ResponseWriter, r *http.Request){
 	var project Project
 	err = row.Scan(&project.Id, &project.Pname, &project.Sdate, &project.Edate, &project.Description, &project.Technologies)
 	if err != nil {
-		fmt.Println("Unable to retrieve data:", err)
-		return
-	}
+        http.Error(w, "Unable to retrieve data: " + err.Error(),  http.StatusBadRequest)
+        return
+    }
 
     // parsing date (change format)
     sDate := project.Sdate.Format("2006-01-02")
     eDate := project.Edate.Format("2006-01-02")
 
-    // tech
-    IsPHP := false
-    IsJS := false
-    IsPYTHON := false
-    IsHTML := false
-    for _, data := range project.Technologies {
-        if data == "php" {
-            IsPHP = true
-        }
-        if data == "js-square" {
-            IsJS = true
-        }
-        if data == "python" {
-            IsPYTHON = true
-        }
-        if data == "html5" {
-            IsHTML = true
-        }
+    // output TechChunk function
+    PHP, JS, PYTHON, HTML, err := TechChunk(project.Technologies)
+    if err != nil {
+        http.Error(w, err.Error(),http.StatusInternalServerError)
+        return
     }
+    IsPHP      := PHP
+    IsJS       := JS
+    IsPYTHON   := PYTHON
+    IsHTML     := HTML
 
 	result := []Project{project}
 
@@ -314,9 +394,9 @@ func updateCard(w http.ResponseWriter, r *http.Request){
 	// executing query
     _, errr := connection.Conn.Exec(context.Background(), sql, pName, sDateForm, eDateForm, description, icon, id)
 	if errr != nil {
-		fmt.Println("Unable to update data:", errr)
-		return
-	}
+        http.Error(w, "Unable to update data: " + errr.Error(),  http.StatusBadRequest)
+        return
+    }
 
 	fmt.Println("Data updated successfully.")
 
@@ -336,9 +416,9 @@ func deleteCard(w http.ResponseWriter, r *http.Request){
     
 	_, errr := connection.Conn.Exec(context.Background(), sql, id)
 	if errr != nil {
-		fmt.Println("Unable to delete data:", errr)
-		return
-	}
+        http.Error(w, "Unable to delete data: " + errr.Error(),  http.StatusBadRequest)
+        return
+    }
 
 	fmt.Println("Data deleted successfully.")
     
@@ -358,6 +438,16 @@ func projectBlog(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+    var store = sessions.NewCookieStore([]byte("SESSION_ID"))
+    session, _ := store.Get(r, "SESSION_ID")
+
+    if session.Values["IsLogin"] != true {
+        Data["IsLogin"] = false
+    } else {
+        Data["IsLogin"] = session.Values["IsLogin"].(bool)
+        Data["Name"] = session.Values["Name"].(string)
+    }
+
     // var for storing id
 	id := (mux.Vars(r)["id"])
     
@@ -369,57 +459,37 @@ func projectBlog(w http.ResponseWriter, r *http.Request) {
 	var project Project
 	err = row.Scan(&project.Id, &project.Pname, &project.Sdate, &project.Edate, &project.Description, &project.Technologies)
 	if err != nil {
-		fmt.Println("Unable to retrieve data:", err)
-		return
-	}
-
-    // parsing date (change format)
-    sDateDay := strconv.Itoa(project.Sdate.Day())
-    sDateMonth := project.Sdate.Month().String()
-    sDateYear := strconv.Itoa(project.Sdate.Year())
-    project.SdateDetail = sDateDay + " " + sDateMonth + " " + sDateYear
-
-    eDateDay := strconv.Itoa(project.Edate.Day())
-    eDateMonth := project.Edate.Month().String()
-    eDateYear := strconv.Itoa(project.Edate.Year())
-    project.EdateDetail = eDateDay + " " + eDateMonth + " " + eDateYear
-
-    // get duration
-    diff := (project.Edate.Sub(project.Sdate)).Hours() // hour
-    DurYear := math.Round(diff / (12 * 30 * 24)) //in Year
-    DurMonth := math.Round(diff / (30 * 24)) //in Month
-    DurWeek := math.Round(diff / (7 * 24)) //in Day
-    DurDay := math.Round(diff / (24)) //in Day
-
-    if DurYear > 0 {
-        project.Duration =  strconv.FormatFloat(DurYear, 'f', 0, 64) + " Year(s)"
-    }else if DurMonth > 0 {
-        project.Duration = strconv.FormatFloat(DurMonth, 'f', 0, 64) + " Month(s)"
-    }else if DurWeek > 0 {
-        project.Duration = strconv.FormatFloat(DurWeek, 'f', 0, 64) + " Week(s)"
-    }else if DurDay > 0 {
-        project.Duration = strconv.FormatFloat(DurDay, 'f', 0, 64) + " Days(s)"
+        http.Error(w, "Unable to retrieve data: " + err.Error(),  http.StatusBadRequest)
+        return
     }
 
-    // tech
-    IsPHP := false
-    IsJS := false
-    IsPYTHON := false
-    IsHTML := false
-    for _, data := range project.Technologies {
-        if data == "php" {
-            IsPHP = true
-        }
-        if data == "js-square" {
-            IsJS = true
-        }
-        if data == "python" {
-            IsPYTHON = true
-        }
-        if data == "html5" {
-            IsHTML = true
-        }
+    // output parsing tima function
+    SdateDetail, EdateDetail, err := ParsingTime(project.Sdate, project.Edate)
+    if err != nil {
+        http.Error(w, err.Error(),http.StatusInternalServerError)
+        return
     }
+    project.SdateDetail = SdateDetail
+    project.EdateDetail = EdateDetail
+
+    // output get duration function
+    Duration, err := GetDuration(project.Sdate, project.Edate)
+    if err != nil {
+        http.Error(w, err.Error(),http.StatusInternalServerError)
+        return
+    }
+    project.Duration = Duration
+
+    // output TechChunk function
+    PHP, JS, PYTHON, HTML, err := TechChunk(project.Technologies)
+    if err != nil {
+        http.Error(w, err.Error(),http.StatusInternalServerError)
+        return
+    }
+    IsPHP      := PHP
+    IsJS       := JS
+    IsPYTHON   := PYTHON
+    IsHTML     := HTML
 
 	result := []Project{project}
 
@@ -451,6 +521,163 @@ func contactMe(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+    var store = sessions.NewCookieStore([]byte("SESSION_ID"))
+    session, _ := store.Get(r, "SESSION_ID")
+
+    if session.Values["IsLogin"] != true {
+        Data["IsLogin"] = false
+    } else {
+        Data["IsLogin"] = session.Values["IsLogin"].(bool)
+        Data["Name"] = session.Values["Name"].(string)
+    }
+
 	// execute file
     tmpl.Execute(w, Data)
+}
+
+/*--------------------------------------------------------------
+# Register Routing Function
+--------------------------------------------------------------*/
+func register(w http.ResponseWriter, r *http.Request) {
+	// parsing file
+    var tmpl, err = template.ParseFiles("views/register.html")
+
+	// (in response) if parsing error
+    if err != nil {
+        http.Error(w, err.Error(),http.StatusInternalServerError)
+        return
+    }
+
+    var store = sessions.NewCookieStore([]byte("SESSION_ID"))
+    session, _ := store.Get(r, "SESSION_ID")
+
+    if session.Values["IsLogin"] != true {
+        Data["IsLogin"] = false
+    } else {
+        Data["IsLogin"] = session.Values["IsLogin"].(bool)
+        Data["Name"] = session.Values["Name"].(string)
+    }
+
+	// execute file
+    tmpl.Execute(w, Data)
+}
+
+/*--------------------------------------------------------------
+# Register POST Routing Function
+--------------------------------------------------------------*/
+func registerPost(w http.ResponseWriter, r *http.Request){
+    // (in request) output data error >> parsing form html
+    err := r.ParseForm()
+
+	// (in response) if parsing error
+    if err != nil {
+        http.Error(w, err.Error(),http.StatusInternalServerError)
+        return
+    }
+
+    // getting data from input form
+    name            := r.PostForm.Get("name")
+    email           := r.PostForm.Get("email")
+    password        := r.PostForm.Get("password")
+    passwordHash, _ := bcrypt.GenerateFromPassword([]byte(password), 10)
+
+    // query
+    sql := "INSERT INTO public.tb_users (name, email, password) VALUES ($1, $2, $3)"
+	_, errr := connection.Conn.Exec(context.Background(), sql, name, email, passwordHash)
+	if errr != nil {
+        http.Error(w, "Unable to register data: " + errr.Error(),  http.StatusBadRequest)
+        return
+    }
+
+	fmt.Println("Data registered successfully.")
+
+    // redirect 
+    http.Redirect(w, r, "/login", http.StatusMovedPermanently)
+}
+
+/*--------------------------------------------------------------
+# Login Routing Function
+--------------------------------------------------------------*/
+func login(w http.ResponseWriter, r *http.Request) {
+	// parsing file
+    var tmpl, err = template.ParseFiles("views/login.html")
+
+	// (in response) if parsing error
+    if err != nil {
+        http.Error(w, err.Error(),http.StatusInternalServerError)
+        return
+    }
+
+    var store = sessions.NewCookieStore([]byte("SESSION_ID"))
+    session, _ := store.Get(r, "SESSION_ID")
+
+    if session.Values["IsLogin"] != true {
+        Data["IsLogin"] = false
+    } else {
+        Data["IsLogin"] = session.Values["IsLogin"].(bool)
+        Data["Name"] = session.Values["Name"].(string)
+    }
+
+	// execute file
+    tmpl.Execute(w, Data)
+}
+
+/*--------------------------------------------------------------
+# Login POST Routing Function
+--------------------------------------------------------------*/
+func loginPost(w http.ResponseWriter, r *http.Request){
+    // (in request) output data error >> parsing form html
+    err := r.ParseForm()
+
+	// (in response) if parsing error
+    if err != nil {
+        http.Error(w, err.Error(),http.StatusInternalServerError)
+        return
+    }
+
+    // getting data from input form
+    email       := r.PostForm.Get("email")
+    password    := r.PostForm.Get("password")
+
+    // query
+    sql := "SELECT * FROM public.tb_users WHERE email=$1;"
+
+	row := connection.Conn.QueryRow(context.Background(), sql, email)
+
+    // storing data
+	var user Users
+	err = row.Scan(&user.Id, &user.Name, &user.Email, &user.Password)
+    // matching email
+    if err != nil {
+        http.Error(w, "Email does not match: " + err.Error(), http.StatusBadRequest)
+        return
+    }
+
+    // matching password
+    err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+    if err != nil {
+        http.Error(w, "Password does not match: " + err.Error(), http.StatusBadRequest)
+        return
+    }
+
+    // setting up the session store (secrey key)
+    store := sessions.NewCookieStore([]byte("SESSION_ID"))
+
+    // getting the session map(session name)
+    session, _ := store.Get(r, "SESSION_ID")
+
+    // assigning values to session.Values map
+    session.Values["IsLogin"] = true
+    session.Values["Name"] = user.Name
+    session.Options.MaxAge = 3600 
+
+    // // adding the flash message to the session
+    // session.AddFlash("Login success", "message")
+
+    // saving the session
+    session.Save(r, w)
+
+    fmt.Println("store: ",store)
+    fmt.Println("session: ",session)
+    http.Redirect(w, r, "/", http.StatusMovedPermanently)
 }
