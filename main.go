@@ -11,6 +11,7 @@ import (
 	"strconv"
     "time"
     "math"
+    "strings"
 
     "chapter02/connection"
     "chapter02/middlewares"
@@ -29,6 +30,7 @@ var Data = map[string]interface{}{
     "IsLogin"   : false,
     "Id"        : 1,
     "Name"      : "Bilkis",
+    "FlashData" : "",
 }
 
 // struct >> kumpulan data type
@@ -180,12 +182,29 @@ func home(w http.ResponseWriter, r *http.Request) {
     if session.Values["IsLogin"] != true {
         Data["IsLogin"] = false
         sql = "SELECT id, pname, sdate, edate, description, technologies, image FROM public.tb_project ORDER BY id ASC;"
+        // session.AddFlash("Logout Success", "message")
+		
     }else {
         Data["IsLogin"] = session.Values["IsLogin"].(bool)
         Data["Name"] = session.Values["Name"].(string)
         Data["Id"] = session.Values["Id"].(int)
         sql = fmt.Sprintf("SELECT public.tb_project.id, pname, sdate, edate, description, technologies, image FROM public.tb_project LEFT JOIN public.tb_users ON public.tb_users.id = public.tb_project.user_id WHERE public.tb_users.id=%d;",Data["Id"])
     }
+
+    fm := session.Flashes("message")
+    fmt.Println(fm)
+
+    var flashes []string
+    if len(fm) > 0 {
+        session.Save(r, w)
+
+        for _, fl := range fm {
+            flashes = append(flashes, fl.(string))
+        }
+    }
+
+    Data["FlashData"] = strings.Join(flashes, "")
+    fmt.Println(Data["FlashData"])
 
     // func to execute query
     rows, _ := connection.Conn.Query(context.Background(), sql)
@@ -223,7 +242,6 @@ func home(w http.ResponseWriter, r *http.Request) {
         "Data":  Data,
         "Project": result,
     }
-
 	// execute file
     tmpl.Execute(w, resp)
 }
@@ -652,8 +670,8 @@ func loginPost(w http.ResponseWriter, r *http.Request){
     session.Values["Name"] = user.Name
     session.Options.MaxAge = 3600 
 
-    // // adding the flash message to the session
-    // session.AddFlash("Login success", "message")
+    // adding the flash message to the session
+    session.AddFlash("Login Success", "message")
 
     // saving the session
     session.Save(r, w)
@@ -671,13 +689,12 @@ func logout(w http.ResponseWriter, r *http.Request) {
 	// getting the current session
 	session, _ := store.Get(r, "SESSION_ID")
 
-	// deleting the session
+    // deleting the session
+    // value is negative, then the cookie is deleted
 	session.Options.MaxAge = -1
 
-    // // adding the flash message to the session
-    // session.AddFlash("Logout success", "message")
-
-	// saving the session
+	// Add flash message for logout
+	session.AddFlash("You have successfully logged out", "message")
     session.Save(r, w)
     http.Redirect(w, r, "/", http.StatusMovedPermanently)
 }

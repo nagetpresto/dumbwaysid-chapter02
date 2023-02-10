@@ -87,6 +87,12 @@
         </header>
         <!-- End NavBar -->
 
+        {{if $.Data.FlashData}}
+            <div class="alert alert-success text-center" role="alert">
+            {{$.Data.FlashData}}
+            </div>
+        {{end}}
+
         <!-- Upper Content -->
         <section class="home d-flex justify-content-center align-items-center" data-aos="fade-down" data-aos-duration="500">
             <div class="container-fluid home-upper">
