@@ -97,7 +97,7 @@
 
                     <!-- Form -->
                     <div class="col-12 col-md-8 col-lg-5 mt-4">
-                        <form action="/edit-card/{{$.Id}}" method="POST">
+                        <form action="/edit-card/{{$.Id}}" method="POST" enctype="multipart/form-data">
                             {{range $index, $data := .Project}}
                             <!-- Project Name -->
                             <div class="form-group mb-4">
@@ -171,7 +171,7 @@
                                 <label for="file" class="form-label">Upload Image</label>
                                 <div class="input-group shadow">
                                     <label class="input-group-text" for="file">Choose</label>
-                                    <input class="form-control" accept="image/*" type="file" id="file" value="sd">
+                                    <input class="form-control" name="input-image" accept="image/*" type="file" id="file" value="{{$.Image}}">
                                     <span class="input-group-text file"><i class="fas fa-paperclip"></i></span>
                                 </div>
                             </div>

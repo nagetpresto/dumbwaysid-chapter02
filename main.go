@@ -13,6 +13,7 @@ import (
     "math"
 
     "chapter02/connection"
+    "chapter02/middlewares"
     "context"
 
     "golang.org/x/crypto/bcrypt"
@@ -23,12 +24,15 @@ import (
 /*--------------------------------------------------------------
 # Global var (object to send and be displayed in html)
 --------------------------------------------------------------*/
+// map interface{} >> key (string), value (anytype)
 var Data = map[string]interface{}{
-    "IsLogin"   : true,
+    "IsLogin"   : false,
     "Id"        : 1,
     "Name"      : "Bilkis",
 }
 
+// struct >> kumpulan data type
+// used to organize kelompok variable
 type Project struct {
     Id              int
     Pname           string
@@ -39,6 +43,7 @@ type Project struct {
     Duration        string
     Description     string
     Technologies    []string
+    Image           string
 }
 
 type Users struct {
@@ -50,7 +55,6 @@ type Users struct {
 /*--------------------------------------------------------------
 # Main Routing Function
 --------------------------------------------------------------*/
-
 func main() {
 	// create new router
     route := mux.NewRouter()
@@ -58,15 +62,19 @@ func main() {
     // calling connection
     connection.DatabaseConnect()
 
-	// accessing static assets (route, funct) >> stripprefix = membungkus >> fileserver = handler
+	// accessing static assets
+    // PathPrefix (path name in html), StripPrefix (remove the pathprefix), FileServer (change it to directory)
+    // "/public/image.jpg" >> will serve >> "./public/image.jpg"
 	route.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("./public/"))))
+    route.PathPrefix("/uploads/").Handler(http.StripPrefix("/uploads/", http.FileServer(http.Dir("./uploads/"))))
 
 	// routing for each page
+    // handler >> handle incoming request with return a response
     route.HandleFunc("/", home).Methods("GET")
 	route.HandleFunc("/add-project", addProject).Methods("GET")
-	route.HandleFunc("/add-card", addCard).Methods("POST")
+	route.HandleFunc("/add-card", middleware.UploadFile(addCard)).Methods("POST")
     route.HandleFunc("/edit-card/{id}", editCard).Methods("GET")
-    route.HandleFunc("/edit-card/{id}", updateCard).Methods("POST")
+    route.HandleFunc("/edit-card/{id}", middleware.UploadFile(updateCard)).Methods("POST")
     route.HandleFunc("/delete-card/{id}", deleteCard).Methods("GET")
 	route.HandleFunc("/project/{id}", projectBlog).Methods("GET")
 	route.HandleFunc("/contact-me", contactMe).Methods("GET")
@@ -74,6 +82,7 @@ func main() {
     route.HandleFunc("/register", registerPost).Methods("POST")
     route.HandleFunc("/login", login).Methods("GET")
     route.HandleFunc("/login", loginPost).Methods("POST")
+    route.HandleFunc("/logout", logout).Methods("GET")
 
 	// starting server
     fmt.Println("Server running on port 5000")
@@ -102,7 +111,6 @@ func ParsingTime(startDate, endDate time.Time) (string, string, error){
 /*--------------------------------------------------------------
 # Get Duration Function
 --------------------------------------------------------------*/
-
 func GetDuration(startDate, endDate time.Time) (string, error) {
     diff := (endDate.Sub(startDate)).Hours() // hour
 
@@ -153,7 +161,9 @@ func TechChunk(Technologies []string) (bool, bool, bool, bool, error){
 /*--------------------------------------------------------------
 # Home Routing Function
 --------------------------------------------------------------*/
+// handler fun with 2 arguments;  w >> construct response, r >> incoming http
 func home(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
 	// parsing file
     var tmpl, err = template.ParseFiles("views/index.html")
 	// (in response) if parsing error
@@ -162,20 +172,19 @@ func home(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+    // conditional session
     sql := ""
     var store = sessions.NewCookieStore([]byte("SESSION_ID"))
     session, _ := store.Get(r, "SESSION_ID")
 
     if session.Values["IsLogin"] != true {
         Data["IsLogin"] = false
-        sql = "SELECT id, pname, sdate, edate, description, technologies FROM public.tb_project ORDER BY id ASC;"
+        sql = "SELECT id, pname, sdate, edate, description, technologies, image FROM public.tb_project ORDER BY id ASC;"
     }else {
         Data["IsLogin"] = session.Values["IsLogin"].(bool)
         Data["Name"] = session.Values["Name"].(string)
         Data["Id"] = session.Values["Id"].(int)
-        sql = fmt.Sprintf("SELECT public.tb_project.id, pname, sdate, edate, description, technologies FROM public.tb_users JOIN public.tb_project ON public.tb_users.id = public.tb_project.user_id WHERE public.tb_users.id=%d;",Data["Id"])
-            // "SELECT id, pname, sdate, edate, description, technologies FROM public.tb_project WHERE user_id=%d ORDER BY id ASC;", Data["Id"])
-        
+        sql = fmt.Sprintf("SELECT public.tb_project.id, pname, sdate, edate, description, technologies, image FROM public.tb_project LEFT JOIN public.tb_users ON public.tb_users.id = public.tb_project.user_id WHERE public.tb_users.id=%d;",Data["Id"])
     }
 
     // func to execute query
@@ -184,8 +193,7 @@ func home(w http.ResponseWriter, r *http.Request) {
 	var result []Project
     for rows.Next() {
         var each = Project{}
-
-        err := rows.Scan(&each.Id, &each.Pname, &each.Sdate, &each.Edate, &each.Description, &each.Technologies)
+        err := rows.Scan(&each.Id, &each.Pname, &each.Sdate, &each.Edate, &each.Description, &each.Technologies, &each.Image)
         if err != nil {
             http.Error(w, "Unable to retrieve data: " + err.Error(), http.StatusBadRequest)
             return
@@ -224,10 +232,7 @@ func home(w http.ResponseWriter, r *http.Request) {
 # Project Routing Function
 --------------------------------------------------------------*/
 func addProject(w http.ResponseWriter, r *http.Request) {
-	// parsing file
     var tmpl, err = template.ParseFiles("views/project.html")
-
-	// (in response) if parsing error
     if err != nil {
         http.Error(w, err.Error(),http.StatusInternalServerError)
         return
@@ -245,7 +250,6 @@ func addProject(w http.ResponseWriter, r *http.Request) {
         Data["Id"] = session.Values["Id"].(int)
     }
 
-	// execute file
     tmpl.Execute(w, Data)
 }
 
@@ -253,7 +257,7 @@ func addProject(w http.ResponseWriter, r *http.Request) {
 # Add Card Routing Function
 --------------------------------------------------------------*/
 func addCard(w http.ResponseWriter, r *http.Request) {
-	// (in request) output data error >> parsing form html
+	// output data error >> parsing form html
     err := r.ParseForm()
 
 	// (in response) if parsing error
@@ -282,8 +286,12 @@ func addCard(w http.ResponseWriter, r *http.Request) {
 		return
     }
 
-    sql := "INSERT INTO public.tb_project (pname, sdate, edate, description, technologies, user_id) VALUES ($1, $2, $3, $4, $5, $6)"
-	_, errr := connection.Conn.Exec(context.Background(), sql, pName, sDateForm, eDateForm, description, icon, Data["Id"])
+    // calling the datafile and convert to string
+    dataContex := r.Context().Value("dataFile")
+    image := dataContex.(string)
+
+    sql := "INSERT INTO public.tb_project (pname, sdate, edate, description, technologies, image, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7)"
+	_, errr := connection.Conn.Exec(context.Background(), sql, pName, sDateForm, eDateForm, description, icon, image, Data["Id"])
 	if errr != nil {
         http.Error(w, "Unable to insert data: " + errr.Error(),  http.StatusBadRequest)
         return
@@ -299,10 +307,7 @@ func addCard(w http.ResponseWriter, r *http.Request) {
 # Edit Card Routing Function
 --------------------------------------------------------------*/
 func editCard(w http.ResponseWriter, r *http.Request){
-    // parsing file
     var tmpl, err = template.ParseFiles("views/project-update.html")
-
-	// (in response) if parsing error
     if err != nil {
         http.Error(w, err.Error(),http.StatusInternalServerError)
         return
@@ -311,12 +316,11 @@ func editCard(w http.ResponseWriter, r *http.Request){
     // var for storing id
 	id := (mux.Vars(r)["id"])
     
-    // selecting query
-    sql := "SELECT id, pname, sdate, edate, description, technologies FROM public.tb_project WHERE id=$1;"
+    sql := "SELECT id, pname, sdate, edate, description, technologies, image FROM public.tb_project WHERE id=$1;"
 	row := connection.Conn.QueryRow(context.Background(), sql, id)
 
 	var project Project
-	err = row.Scan(&project.Id, &project.Pname, &project.Sdate, &project.Edate, &project.Description, &project.Technologies)
+	err = row.Scan(&project.Id, &project.Pname, &project.Sdate, &project.Edate, &project.Description, &project.Technologies, &project.Image)
 	if err != nil {
         http.Error(w, "Unable to retrieve data: " + err.Error(),  http.StatusBadRequest)
         return
@@ -354,23 +358,18 @@ func editCard(w http.ResponseWriter, r *http.Request){
 
     // execute file
     tmpl.Execute(w, resp)
-
 }
 
 /*--------------------------------------------------------------
 # Update Card Routing Function
 --------------------------------------------------------------*/
 func updateCard(w http.ResponseWriter, r *http.Request){
-    // (in request) output data error >> parsing form html
     err := r.ParseForm()
-
-	// (in response) if parsing error
     if err != nil {
         http.Error(w, err.Error(),http.StatusInternalServerError)
         return
     }
 
-    // var for storing id
 	id := (mux.Vars(r)["id"])
 
     // getting data from input form
@@ -393,10 +392,12 @@ func updateCard(w http.ResponseWriter, r *http.Request){
 		return
     }
 
-    // query to update
-    sql := "UPDATE public.tb_project SET pname=$1, sdate=$2, edate=$3, description=$4, technologies=$5 WHERE id=$6"
-	// executing query
-    _, errr := connection.Conn.Exec(context.Background(), sql, pName, sDateForm, eDateForm, description, icon, id)
+    // calling the datafile and convert to string
+    dataContex := r.Context().Value("dataFile")
+    image := dataContex.(string)
+
+    sql := "UPDATE public.tb_project SET pname=$1, sdate=$2, edate=$3, description=$4, technologies=$5, image=$6 WHERE id=$7"
+    _, errr := connection.Conn.Exec(context.Background(), sql, pName, sDateForm, eDateForm, description, icon, image, id)
 	if errr != nil {
         http.Error(w, "Unable to update data: " + errr.Error(),  http.StatusBadRequest)
         return
@@ -412,18 +413,14 @@ func updateCard(w http.ResponseWriter, r *http.Request){
 # Delete Card Routing Function
 --------------------------------------------------------------*/
 func deleteCard(w http.ResponseWriter, r *http.Request){
-    // var for storing id
 	id := (mux.Vars(r)["id"])
-    
-    // query
+
     sql := "DELETE FROM public.tb_project WHERE id=$1;"
-    
 	_, errr := connection.Conn.Exec(context.Background(), sql, id)
 	if errr != nil {
         http.Error(w, "Unable to delete data: " + errr.Error(),  http.StatusBadRequest)
         return
     }
-
 	fmt.Println("Data deleted successfully.")
     
     http.Redirect(w, r, "/", http.StatusMovedPermanently)
@@ -433,10 +430,7 @@ func deleteCard(w http.ResponseWriter, r *http.Request){
 # Project Blog Routing Function
 --------------------------------------------------------------*/
 func projectBlog(w http.ResponseWriter, r *http.Request) {
-	// parsing file
 	var tmpl, err = template.ParseFiles("views/project-blog.html")
-
-	// (in response) if parsing error
     if err != nil {
         http.Error(w, err.Error(),http.StatusInternalServerError)
         return
@@ -454,16 +448,13 @@ func projectBlog(w http.ResponseWriter, r *http.Request) {
         Data["Id"] = session.Values["Id"].(int)
     }
 
-    // var for storing id
 	id := (mux.Vars(r)["id"])
     
-    // query
-    sql := "SELECT id, pname, sdate, edate, description, technologies FROM public.tb_project WHERE id=$1;"
-
+    sql := "SELECT id, pname, sdate, edate, description, technologies, image FROM public.tb_project WHERE id=$1;"
 	row := connection.Conn.QueryRow(context.Background(), sql, id)
 
 	var project Project
-	err = row.Scan(&project.Id, &project.Pname, &project.Sdate, &project.Edate, &project.Description, &project.Technologies)
+	err = row.Scan(&project.Id, &project.Pname, &project.Sdate, &project.Edate, &project.Description, &project.Technologies, &project.Image)
 	if err != nil {
         http.Error(w, "Unable to retrieve data: " + err.Error(),  http.StatusBadRequest)
         return
@@ -511,17 +502,13 @@ func projectBlog(w http.ResponseWriter, r *http.Request) {
 
     // execute file
     tmpl.Execute(w, resp)
-
 }
 
 /*--------------------------------------------------------------
 # Contact Me Routing Function
 --------------------------------------------------------------*/
 func contactMe(w http.ResponseWriter, r *http.Request) {
-	// parsing file
     var tmpl, err = template.ParseFiles("views/contact-me.html")
-
-	// (in response) if parsing error
     if err != nil {
         http.Error(w, err.Error(),http.StatusInternalServerError)
         return
@@ -538,8 +525,6 @@ func contactMe(w http.ResponseWriter, r *http.Request) {
         Data["Name"] = session.Values["Name"].(string)
         Data["Id"] = session.Values["Id"].(int)
     }
-
-	// execute file
     tmpl.Execute(w, Data)
 }
 
@@ -547,10 +532,7 @@ func contactMe(w http.ResponseWriter, r *http.Request) {
 # Register Routing Function
 --------------------------------------------------------------*/
 func register(w http.ResponseWriter, r *http.Request) {
-	// parsing file
     var tmpl, err = template.ParseFiles("views/register.html")
-
-	// (in response) if parsing error
     if err != nil {
         http.Error(w, err.Error(),http.StatusInternalServerError)
         return
@@ -568,7 +550,6 @@ func register(w http.ResponseWriter, r *http.Request) {
         Data["Id"] = session.Values["Id"].(int)
     }
 
-	// execute file
     tmpl.Execute(w, Data)
 }
 
@@ -576,10 +557,7 @@ func register(w http.ResponseWriter, r *http.Request) {
 # Register POST Routing Function
 --------------------------------------------------------------*/
 func registerPost(w http.ResponseWriter, r *http.Request){
-    // (in request) output data error >> parsing form html
     err := r.ParseForm()
-
-	// (in response) if parsing error
     if err != nil {
         http.Error(w, err.Error(),http.StatusInternalServerError)
         return
@@ -591,7 +569,6 @@ func registerPost(w http.ResponseWriter, r *http.Request){
     password        := r.PostForm.Get("password")
     passwordHash, _ := bcrypt.GenerateFromPassword([]byte(password), 10)
 
-    // query
     sql := "INSERT INTO public.tb_users (name, email, password) VALUES ($1, $2, $3)"
 	_, errr := connection.Conn.Exec(context.Background(), sql, name, email, passwordHash)
 	if errr != nil {
@@ -600,8 +577,6 @@ func registerPost(w http.ResponseWriter, r *http.Request){
     }
 
 	fmt.Println("Data registered successfully.")
-
-    // redirect 
     http.Redirect(w, r, "/login", http.StatusMovedPermanently)
 }
 
@@ -609,10 +584,7 @@ func registerPost(w http.ResponseWriter, r *http.Request){
 # Login Routing Function
 --------------------------------------------------------------*/
 func login(w http.ResponseWriter, r *http.Request) {
-	// parsing file
-    var tmpl, err = template.ParseFiles("views/login.html")
-
-	// (in response) if parsing error
+	var tmpl, err = template.ParseFiles("views/login.html")
     if err != nil {
         http.Error(w, err.Error(),http.StatusInternalServerError)
         return
@@ -630,7 +602,6 @@ func login(w http.ResponseWriter, r *http.Request) {
         Data["Id"] = session.Values["Id"].(int)
     }
 
-	// execute file
     tmpl.Execute(w, Data)
 }
 
@@ -638,10 +609,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 # Login POST Routing Function
 --------------------------------------------------------------*/
 func loginPost(w http.ResponseWriter, r *http.Request){
-    // (in request) output data error >> parsing form html
     err := r.ParseForm()
-
-	// (in response) if parsing error
     if err != nil {
         http.Error(w, err.Error(),http.StatusInternalServerError)
         return
@@ -658,6 +626,7 @@ func loginPost(w http.ResponseWriter, r *http.Request){
     // storing data
 	var user Users
 	err = row.Scan(&user.Id, &user.Name, &user.Email, &user.Password)
+
     // matching email
     if err != nil {
         http.Error(w, "Email does not match: " + err.Error(), http.StatusBadRequest)
@@ -688,6 +657,27 @@ func loginPost(w http.ResponseWriter, r *http.Request){
 
     // saving the session
     session.Save(r, w)
-    
+    http.Redirect(w, r, "/", http.StatusMovedPermanently)
+}
+
+/*--------------------------------------------------------------
+# Logut Routing Function
+--------------------------------------------------------------*/
+func logout(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+    // setting up the session store (secrey key)
+    store := sessions.NewCookieStore([]byte("SESSION_ID"))
+
+	// getting the current session
+	session, _ := store.Get(r, "SESSION_ID")
+
+	// deleting the session
+	session.Options.MaxAge = -1
+
+    // // adding the flash message to the session
+    // session.AddFlash("Logout success", "message")
+
+	// saving the session
+    session.Save(r, w)
     http.Redirect(w, r, "/", http.StatusMovedPermanently)
 }
