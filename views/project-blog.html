@@ -60,12 +60,21 @@
 
                         <!-- Right Side -->
                         <ul class="navbar-nav mt-2 mt-lg-0 mb-2 mb-lg-0">
+                            {{if $.Data.IsLogin}}
+                            <li class="nav-item">
+                                <a class="nav-link me-5" href="/"><i class="fas fa-user me-2"></i>{{.Data.Name}}</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link me-5" href="/logout">Logout</a>
+                            </li>
+                            {{else}}
                             <li class="nav-item">
                                 <a class="nav-link me-5" href="/register">Register</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link me-5" href="/login">Login</a>
                             </li>
+                            {{end}}
                         </ul>
                         <a class="btn btn-outline-light btn-sm px-3 py-1" href="/contact-me" role="button">Contact Me</a>
                         <!-- End Right Side -->

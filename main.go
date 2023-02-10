@@ -25,8 +25,8 @@ import (
 --------------------------------------------------------------*/
 var Data = map[string]interface{}{
     "IsLogin"   : true,
+    "Id"        : 1,
     "Name"      : "Bilkis",
-    "Alert"     : "sd",
 }
 
 type Project struct {
@@ -47,7 +47,6 @@ type Users struct {
     Email    string
     Password string
 }
-
 /*--------------------------------------------------------------
 # Main Routing Function
 --------------------------------------------------------------*/
@@ -163,18 +162,21 @@ func home(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+    sql := ""
     var store = sessions.NewCookieStore([]byte("SESSION_ID"))
     session, _ := store.Get(r, "SESSION_ID")
 
     if session.Values["IsLogin"] != true {
         Data["IsLogin"] = false
-    } else {
+        sql = "SELECT id, pname, sdate, edate, description, technologies FROM public.tb_project ORDER BY id ASC;"
+    }else {
         Data["IsLogin"] = session.Values["IsLogin"].(bool)
         Data["Name"] = session.Values["Name"].(string)
+        Data["Id"] = session.Values["Id"].(int)
+        sql = fmt.Sprintf("SELECT public.tb_project.id, pname, sdate, edate, description, technologies FROM public.tb_users JOIN public.tb_project ON public.tb_users.id = public.tb_project.user_id WHERE public.tb_users.id=%d;",Data["Id"])
+            // "SELECT id, pname, sdate, edate, description, technologies FROM public.tb_project WHERE user_id=%d ORDER BY id ASC;", Data["Id"])
+        
     }
-
-    // query
-    sql := "SELECT id, pname, sdate, edate, description, technologies FROM public.tb_project ORDER BY id ASC;"
 
     // func to execute query
     rows, _ := connection.Conn.Query(context.Background(), sql)
@@ -236,9 +238,11 @@ func addProject(w http.ResponseWriter, r *http.Request) {
 
     if session.Values["IsLogin"] != true {
         Data["IsLogin"] = false
+        Data["Id"] = session.Values["Id"]
     } else {
         Data["IsLogin"] = session.Values["IsLogin"].(bool)
         Data["Name"] = session.Values["Name"].(string)
+        Data["Id"] = session.Values["Id"].(int)
     }
 
 	// execute file
@@ -278,8 +282,8 @@ func addCard(w http.ResponseWriter, r *http.Request) {
 		return
     }
 
-    sql := "INSERT INTO public.tb_project (pname, sdate, edate, description, technologies) VALUES ($1, $2, $3, $4, $5)"
-	_, errr := connection.Conn.Exec(context.Background(), sql, pName, sDateForm, eDateForm, description, icon)
+    sql := "INSERT INTO public.tb_project (pname, sdate, edate, description, technologies, user_id) VALUES ($1, $2, $3, $4, $5, $6)"
+	_, errr := connection.Conn.Exec(context.Background(), sql, pName, sDateForm, eDateForm, description, icon, Data["Id"])
 	if errr != nil {
         http.Error(w, "Unable to insert data: " + errr.Error(),  http.StatusBadRequest)
         return
@@ -443,9 +447,11 @@ func projectBlog(w http.ResponseWriter, r *http.Request) {
 
     if session.Values["IsLogin"] != true {
         Data["IsLogin"] = false
+        Data["Id"] = session.Values["Id"]
     } else {
         Data["IsLogin"] = session.Values["IsLogin"].(bool)
         Data["Name"] = session.Values["Name"].(string)
+        Data["Id"] = session.Values["Id"].(int)
     }
 
     // var for storing id
@@ -526,9 +532,11 @@ func contactMe(w http.ResponseWriter, r *http.Request) {
 
     if session.Values["IsLogin"] != true {
         Data["IsLogin"] = false
+        Data["Id"] = session.Values["Id"]
     } else {
         Data["IsLogin"] = session.Values["IsLogin"].(bool)
         Data["Name"] = session.Values["Name"].(string)
+        Data["Id"] = session.Values["Id"].(int)
     }
 
 	// execute file
@@ -553,9 +561,11 @@ func register(w http.ResponseWriter, r *http.Request) {
 
     if session.Values["IsLogin"] != true {
         Data["IsLogin"] = false
+        Data["Id"] = session.Values["Id"]
     } else {
         Data["IsLogin"] = session.Values["IsLogin"].(bool)
         Data["Name"] = session.Values["Name"].(string)
+        Data["Id"] = session.Values["Id"].(int)
     }
 
 	// execute file
@@ -613,9 +623,11 @@ func login(w http.ResponseWriter, r *http.Request) {
 
     if session.Values["IsLogin"] != true {
         Data["IsLogin"] = false
+        Data["Id"] = session.Values["Id"]
     } else {
         Data["IsLogin"] = session.Values["IsLogin"].(bool)
         Data["Name"] = session.Values["Name"].(string)
+        Data["Id"] = session.Values["Id"].(int)
     }
 
 	// execute file
@@ -639,9 +651,8 @@ func loginPost(w http.ResponseWriter, r *http.Request){
     email       := r.PostForm.Get("email")
     password    := r.PostForm.Get("password")
 
-    // query
+    // query for selecting to compare
     sql := "SELECT * FROM public.tb_users WHERE email=$1;"
-
 	row := connection.Conn.QueryRow(context.Background(), sql, email)
 
     // storing data
@@ -668,6 +679,7 @@ func loginPost(w http.ResponseWriter, r *http.Request){
 
     // assigning values to session.Values map
     session.Values["IsLogin"] = true
+    session.Values["Id"] = user.Id
     session.Values["Name"] = user.Name
     session.Options.MaxAge = 3600 
 
@@ -676,8 +688,6 @@ func loginPost(w http.ResponseWriter, r *http.Request){
 
     // saving the session
     session.Save(r, w)
-
-    fmt.Println("store: ",store)
-    fmt.Println("session: ",session)
+    
     http.Redirect(w, r, "/", http.StatusMovedPermanently)
 }
